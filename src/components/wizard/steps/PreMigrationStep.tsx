@@ -14,8 +14,8 @@ interface PreMigrationStepProps {
 const preMigrationTasks = [
   {
     id: "export-code",
-    title: "Export your code from Lovable",
-    description: "Download your project as a ZIP file from the Lovable dashboard",
+    title: "Export your project code",
+    description: "Download or clone your project source code as a ZIP file",
     importance: "critical" as const,
   },
   {
@@ -94,7 +94,7 @@ const PreMigrationStep = ({
       <div className="rounded-xl border border-border bg-card p-6">
         <h3 className="mb-4 font-semibold text-foreground flex items-center gap-2">
           <Download className="h-5 w-5 text-primary" />
-          Upload Your Lovable Export
+          Upload Your Project Export
         </h3>
         <FileUploadZone onFileSelect={onFileUpload} />
       </div>
