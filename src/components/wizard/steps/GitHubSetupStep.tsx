@@ -22,7 +22,7 @@ git init
 git add .
 
 # Create initial commit
-git commit -m "Initial commit from Lovable migration"
+git commit -m "Initial commit"
 
 # Add remote origin
 git remote add origin https://github.com/username/${repoName || "my-project"}.git

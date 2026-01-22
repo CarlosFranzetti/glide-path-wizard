@@ -1,6 +1,6 @@
-# Lovable Migration Assistant
+# Migration Assistant
 
-A step-by-step wizard to help you migrate your Lovable projects to production hosting platforms.
+A step-by-step wizard to help you migrate your web projects to production hosting platforms.
 
 ## Migration Workflow
 
@@ -18,8 +18,8 @@ Before starting the migration, complete these essential preparation tasks:
 
 | Task | Description | Commands |
 |------|-------------|----------|
-| **Export your code from Lovable** | Download your project as a ZIP file from the Lovable dashboard | Upload via the wizard interface |
-| **Backup database & environment variables** | Export your Supabase database and save all environment variables | `supabase db dump -f backup.sql`<br>`printenv \| grep -E '^(VITE_\|SUPABASE_\|API_)' > .env.backup` |
+| **Export your project code** | Download or clone your project source code | ZIP download or `git clone` |
+| **Backup database & environment variables** | Export your database and save all environment variables | `pg_dump -f backup.sql` or platform-specific export<br>`printenv | grep -E '^(VITE_|API_|DATABASE_)' > .env.backup` |
 
 ### Recommended Tasks
 
@@ -40,7 +40,7 @@ Before starting the migration, complete these essential preparation tasks:
 
 **Create and configure repository**
 
-Set up a GitHub repository to host your migrated project code.
+Set up a GitHub repository to host your project code.
 
 ### Tasks
 
@@ -59,7 +59,7 @@ git init
 git add .
 
 # Create initial commit
-git commit -m "Initial commit from Lovable migration"
+git commit -m "Initial commit"
 
 # Add remote origin
 git remote add origin https://github.com/username/your-repo-name.git
@@ -74,7 +74,7 @@ git push -u origin main
 
 **Choose your hosting platform**
 
-Select where you want to deploy your migrated application.
+Select where you want to deploy your application.
 
 ### Platform Comparison
 
@@ -186,8 +186,8 @@ Configure your environment variables in your chosen platform's dashboard:
 | Variable | Description |
 |----------|-------------|
 | `VITE_API_URL` | Your API endpoint URL |
-| `VITE_SUPABASE_URL` | Supabase project URL (if applicable) |
-| `VITE_SUPABASE_ANON_KEY` | Supabase anonymous key (if applicable) |
+| `DATABASE_URL` | Database connection string (if applicable) |
+| `API_KEY` | Third-party API keys (if applicable) |
 
 ### Deploy
 
@@ -226,32 +226,3 @@ npm run build
 # Preview production build
 npm run preview
 ```
-
----
-
-## Project Info
-
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
-
-## How can I edit this code?
-
-**Use Lovable**: Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
-
-**Use your preferred IDE**: Clone this repo and push changes. Changes will sync to Lovable.
-
-```bash
-git clone <YOUR_GIT_URL>
-cd <YOUR_PROJECT_NAME>
-npm install
-npm run dev
-```
-
-## Deployment
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share → Publish.
-
-## Custom Domain
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)

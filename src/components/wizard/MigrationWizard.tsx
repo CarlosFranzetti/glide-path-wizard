@@ -63,7 +63,7 @@ const MigrationWizard = () => {
             </div>
             <div>
               <h1 className="font-bold text-foreground">Migration Assistant</h1>
-              <p className="text-xs text-muted-foreground">Lovable → Production</p>
+              <p className="text-xs text-muted-foreground">Deploy to Production</p>
             </div>
           </div>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
