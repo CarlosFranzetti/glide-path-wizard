@@ -11,10 +11,22 @@ interface PreMigrationStepProps {
 
 const preMigrationTasks = [
   {
-    id: "export-code",
-    title: "Export your project code",
-    description: "Download or clone your project source code as a ZIP file",
+    id: "locate-code",
+    title: "Locate your project code",
+    description: "Ensure you have your project source code on your local machine",
     importance: "critical" as const,
+    code: `# If you already have your code locally:
+# ✅ Great! Skip to the next task.
+
+# If your code is on another platform (Replit, Glitch, etc.):
+# 1. Use their export/download feature to get your code
+# 2. If available, clone via Git:
+git clone <your-project-url>
+
+# If you have a ZIP file:
+# 1. Extract it to a folder on your computer
+# 2. Navigate to that folder in your terminal:
+cd /path/to/your-project`,
   },
   {
     id: "check-database",
@@ -155,21 +167,42 @@ npm run dev
 npm test`,
   },
   {
-    id: "create-zip",
-    title: "Create project archive",
-    description: "ZIP your project folder for backup and transfer (after all checks are complete)",
-    importance: "recommended" as const,
-    code: `# Create a ZIP archive of your project
-# Make sure to exclude node_modules and other unnecessary files
+    id: "verify-local",
+    title: "Verify local development works",
+    description: "Confirm your application runs correctly on your local machine before deployment",
+    importance: "critical" as const,
+    code: `# Navigate to your project directory
+cd /path/to/your-project
+
+# Install dependencies (if not already installed)
+npm install
+
+# Start the development server
+npm run dev
+
+# ✅ Verify the app opens in your browser and works correctly
+# ✅ Check the terminal for any errors
+# ✅ Test key features to ensure everything functions
+
+# If you see errors, fix them before proceeding to deployment`,
+  },
+  {
+    id: "create-backup",
+    title: "Create project backup (optional)",
+    description: "Create a backup ZIP file before making changes",
+    importance: "optional" as const,
+    code: `# Create a ZIP archive of your project for safekeeping
+# Exclude node_modules and build files to keep it small
 
 # On macOS/Linux:
-zip -r project-backup.zip . -x "node_modules/*" -x ".git/*" -x "dist/*" -x "build/*"
+zip -r project-backup-$(date +%Y%m%d).zip . -x "node_modules/*" -x ".git/*" -x "dist/*" -x "build/*"
 
 # On Windows (PowerShell):
-# Compress-Archive -Path . -DestinationPath project-backup.zip -Exclude node_modules,dist,build,.git
+# $date = Get-Date -Format "yyyyMMdd"
+# Compress-Archive -Path . -DestinationPath "project-backup-$date.zip"
 
-# Verify the archive was created
-ls -lh project-backup.zip`,
+# Verify the backup was created
+ls -lh project-backup-*.zip`,
   },
   {
     id: "review-deps",
@@ -192,7 +225,7 @@ const PreMigrationStep = ({
   completedTasks,
   onToggleTask,
 }: PreMigrationStepProps) => {
-  const criticalTasksComplete = ["export-code", "check-database", "backup-db"].every((id) =>
+  const criticalTasksComplete = ["locate-code", "check-database", "backup-db", "verify-local"].every((id) =>
     completedTasks.includes(id)
   );
 

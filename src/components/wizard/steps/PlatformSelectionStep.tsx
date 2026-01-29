@@ -132,22 +132,59 @@ const PlatformSelectionStep = ({
         <motion.div
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: "auto" }}
-          className="rounded-xl bg-primary/5 border border-primary/20 p-4"
+          className="rounded-xl bg-primary/5 border border-primary/20 p-6 space-y-4"
         >
-          <p className="text-sm text-foreground">
-            <strong>
-              {platforms.find((p) => p.id === selectedPlatform)?.name}
-            </strong>{" "}
-            is a great choice!{" "}
-            {selectedPlatform === "vercel" &&
-              "Vercel offers the fastest deployment experience for React applications with automatic optimizations."}
-            {selectedPlatform === "netlify" &&
-              "Netlify excels at static sites and provides built-in form handling out of the box."}
-            {selectedPlatform === "render" &&
-              "Render is perfect if you need databases and background jobs alongside your frontend."}
-            {selectedPlatform === "github-pages" &&
-              "GitHub Pages is ideal for simple static sites with no backend requirements."}
-          </p>
+          <div>
+            <p className="text-sm text-foreground">
+              <strong className="text-base">
+                {platforms.find((p) => p.id === selectedPlatform)?.name}
+              </strong>{" "}
+              is a great choice!{" "}
+              {selectedPlatform === "vercel" &&
+                "Vercel offers the fastest deployment experience for React applications with automatic optimizations."}
+              {selectedPlatform === "netlify" &&
+                "Netlify excels at static sites and provides built-in form handling out of the box."}
+              {selectedPlatform === "render" &&
+                "Render is perfect if you need databases and background jobs alongside your frontend."}
+              {selectedPlatform === "github-pages" &&
+                "GitHub Pages is ideal for simple static sites with no backend requirements."}
+            </p>
+          </div>
+
+          {/* When to choose guide */}
+          <div className="pt-2 border-t border-primary/20">
+            <p className="text-xs font-medium text-foreground mb-2">💡 Best for:</p>
+            <ul className="text-xs text-muted-foreground space-y-1">
+              {selectedPlatform === "vercel" && (
+                <>
+                  <li>• React, Next.js, or Vite projects</li>
+                  <li>• Projects needing serverless functions</li>
+                  <li>• Teams wanting preview deployments</li>
+                </>
+              )}
+              {selectedPlatform === "netlify" && (
+                <>
+                  <li>• Static sites and JAMstack apps</li>
+                  <li>• Projects using forms</li>
+                  <li>• Developers wanting built-in CI/CD</li>
+                </>
+              )}
+              {selectedPlatform === "render" && (
+                <>
+                  <li>• Full-stack applications</li>
+                  <li>• Projects needing PostgreSQL database</li>
+                  <li>• Apps with cron jobs or background workers</li>
+                </>
+              )}
+              {selectedPlatform === "github-pages" && (
+                <>
+                  <li>• Portfolio or documentation sites</li>
+                  <li>• Static sites with no backend</li>
+                  <li>• Projects wanting 100% free hosting</li>
+                </>
+              )}
+            </ul>
+          </div>
         </motion.div>
       )}
 

@@ -100,6 +100,8 @@ const DeploymentStep = ({ onBack, selectedPlatform }: DeploymentStepProps) => {
     { key: "VITE_API_URL", value: "", visible: false },
   ]);
   const [isDeployed, setIsDeployed] = useState(false);
+  const [deploymentUrl, setDeploymentUrl] = useState("");
+  const [isVerified, setIsVerified] = useState(false);
 
   const config = platformConfigs[selectedPlatform] || platformConfigs.vercel;
 
@@ -128,46 +130,168 @@ const DeploymentStep = ({ onBack, selectedPlatform }: DeploymentStepProps) => {
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="flex flex-col items-center justify-center py-16 text-center"
+        className="space-y-8 py-8"
       >
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ delay: 0.2, type: "spring" }}
-          className="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-success/20"
-        >
-          <PartyPopper className="h-12 w-12 text-success" />
-        </motion.div>
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="text-3xl font-bold text-foreground"
-        >
-          Migration Complete! 🎉
-        </motion.h2>
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="mt-3 text-lg text-muted-foreground max-w-md"
-        >
-          Your application has been successfully migrated to {config.name}.
-        </motion.p>
+        <div className="flex flex-col items-center justify-center text-center">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.2, type: "spring" }}
+            className="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-success/20"
+          >
+            <PartyPopper className="h-12 w-12 text-success" />
+          </motion.div>
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="text-3xl font-bold text-foreground"
+          >
+            Deployment Initiated! 🚀
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="mt-3 text-lg text-muted-foreground max-w-md"
+          >
+            Your application is being deployed to {config.name}.
+          </motion.p>
+        </div>
+
+        {/* Post-Deployment Checklist */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
-          className="mt-8 flex gap-4"
+          className="rounded-xl border border-border bg-card overflow-hidden"
         >
-          <Button variant="hero" size="lg" className="gap-2">
-            View Your App
-            <ExternalLink className="h-4 w-4" />
-          </Button>
-          <Button variant="outline" size="lg" onClick={() => setIsDeployed(false)}>
-            View Details
-          </Button>
+          <div className="bg-muted/50 p-4 border-b border-border flex items-center gap-3">
+            <Check className="h-5 w-5 text-foreground" />
+            <span className="font-medium text-foreground">Post-Deployment Verification</span>
+          </div>
+          <div className="p-6 space-y-4">
+            <p className="text-sm text-muted-foreground mb-4">
+              Before celebrating, verify everything works correctly:
+            </p>
+            
+            {/* Deployment URL input */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">
+                Your deployment URL:
+              </label>
+              <div className="flex gap-2">
+                <Input
+                  value={deploymentUrl}
+                  onChange={(e) => setDeploymentUrl(e.target.value)}
+                  placeholder="https://your-app.vercel.app"
+                  className="flex-1"
+                />
+                {deploymentUrl && (
+                  <Button
+                    variant="outline"
+                    onClick={() => window.open(deploymentUrl, "_blank")}
+                    className="gap-2"
+                  >
+                    Open
+                    <ExternalLink className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+            </div>
+
+            {/* Checklist */}
+            <div className="space-y-3 pt-4">
+              <p className="text-sm font-medium text-foreground">Verify these critical items:</p>
+              <div className="space-y-2.5">
+                <label className="flex items-start gap-3 p-3 rounded-lg hover:bg-muted/50 cursor-pointer transition-colors">
+                  <input type="checkbox" className="mt-0.5" />
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Site loads without errors</p>
+                    <p className="text-xs text-muted-foreground">Check browser console for errors</p>
+                  </div>
+                </label>
+                <label className="flex items-start gap-3 p-3 rounded-lg hover:bg-muted/50 cursor-pointer transition-colors">
+                  <input type="checkbox" className="mt-0.5" />
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Navigation and routing work</p>
+                    <p className="text-xs text-muted-foreground">Test all pages and links</p>
+                  </div>
+                </label>
+                <label className="flex items-start gap-3 p-3 rounded-lg hover:bg-muted/50 cursor-pointer transition-colors">
+                  <input type="checkbox" className="mt-0.5" />
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Environment variables are working</p>
+                    <p className="text-xs text-muted-foreground">API calls and external services function</p>
+                  </div>
+                </label>
+                <label className="flex items-start gap-3 p-3 rounded-lg hover:bg-muted/50 cursor-pointer transition-colors">
+                  <input type="checkbox" className="mt-0.5" />
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Database connections work (if applicable)</p>
+                    <p className="text-xs text-muted-foreground">Test data loading and updates</p>
+                  </div>
+                </label>
+                <label className="flex items-start gap-3 p-3 rounded-lg hover:bg-muted/50 cursor-pointer transition-colors">
+                  <input type="checkbox" className="mt-0.5" />
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Key features work as expected</p>
+                    <p className="text-xs text-muted-foreground">Test critical user workflows</p>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            {/* Troubleshooting */}
+            <div className="mt-6 p-4 rounded-lg bg-warning/5 border border-warning/30">
+              <p className="text-sm font-medium text-foreground mb-2">⚠️ If Something's Wrong:</p>
+              <ul className="text-sm text-muted-foreground space-y-1.5">
+                <li>• Check build logs on {config.name} dashboard</li>
+                <li>• Verify environment variables are set correctly</li>
+                <li>• Ensure build command and output directory match your local setup</li>
+                <li>• Check that all dependencies are in package.json</li>
+                <li>• Review {config.name} documentation for troubleshooting</li>
+              </ul>
+            </div>
+
+            {/* Mark as verified */}
+            <div className="flex items-center justify-center pt-4">
+              <button
+                onClick={() => setIsVerified(true)}
+                disabled={!deploymentUrl}
+                className="flex items-center gap-2 rounded-lg border-2 border-success/30 bg-success/5 px-6 py-3 text-success hover:bg-success/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Check className="h-5 w-5" />
+                <span className="font-medium">Everything works! Mark as complete</span>
+              </button>
+            </div>
+          </div>
         </motion.div>
+
+        {/* Success message */}
+        {isVerified && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-center py-8"
+          >
+            <h3 className="text-2xl font-bold text-success mb-3">
+              Migration Complete! 🎉
+            </h3>
+            <p className="text-muted-foreground mb-6">
+              Your application is live and verified on {config.name}
+            </p>
+            <div className="flex items-center justify-center gap-4">
+              <Button variant="hero" size="lg" className="gap-2" onClick={() => window.open(deploymentUrl, "_blank")}>
+                View Your Live App
+                <ExternalLink className="h-4 w-4" />
+              </Button>
+              <Button variant="outline" size="lg" onClick={() => setIsDeployed(false)}>
+                Back to Settings
+              </Button>
+            </div>
+          </motion.div>
+        )}
       </motion.div>
     );
   }
@@ -195,11 +319,22 @@ const DeploymentStep = ({ onBack, selectedPlatform }: DeploymentStepProps) => {
           <Settings className="h-5 w-5 text-foreground" />
           <span className="font-medium text-foreground">Build Configuration</span>
         </div>
-        <div className="p-6">
-          <p className="text-sm text-muted-foreground mb-4">
-            Add this configuration file to your project root:
-          </p>
-          <CodeBlock code={config.configCode} language="yaml" />
+        <div className="p-6 space-y-4">
+          <div>
+            <p className="text-sm text-muted-foreground mb-4">
+              Add this configuration file to your project root, commit it, and push to GitHub:
+            </p>
+            <CodeBlock code={config.configCode} language="yaml" />
+          </div>
+          
+          <div className="p-4 rounded-lg bg-muted/30 border border-border">
+            <p className="text-sm font-medium text-foreground mb-2">📝 Don't forget:</p>
+            <ol className="text-sm text-muted-foreground space-y-1.5 list-decimal list-inside">
+              <li>Create the config file in your project root</li>
+              <li>Commit: <code className="text-xs bg-background px-1 rounded">git add . && git commit -m "Add deployment config"</code></li>
+              <li>Push: <code className="text-xs bg-background px-1 rounded">git push</code></li>
+            </ol>
+          </div>
         </div>
       </div>
 
