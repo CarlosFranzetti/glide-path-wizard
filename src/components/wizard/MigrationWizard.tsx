@@ -91,7 +91,6 @@ const MigrationWizard = () => {
                   onNext={nextStep}
                   completedTasks={completedTasks}
                   onToggleTask={handleToggleTask}
-                  onFileUpload={handleFileUpload}
                 />
               )}
               {currentStep === 2 && (
