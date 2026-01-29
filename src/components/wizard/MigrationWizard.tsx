@@ -33,7 +33,6 @@ const steps = [
 const MigrationWizard = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [completedTasks, setCompletedTasks] = useState<string[]>([]);
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [selectedPlatform, setSelectedPlatform] = useState<string>("");
 
   const handleToggleTask = (taskId: string) => {
@@ -42,11 +41,6 @@ const MigrationWizard = () => {
         ? prev.filter((id) => id !== taskId)
         : [...prev, taskId]
     );
-  };
-
-  const handleFileUpload = (file: File) => {
-    setUploadedFile(file);
-    handleToggleTask("export-code");
   };
 
   const nextStep = () => setCurrentStep((prev) => Math.min(prev + 1, 4));
@@ -91,7 +85,6 @@ const MigrationWizard = () => {
                   onNext={nextStep}
                   completedTasks={completedTasks}
                   onToggleTask={handleToggleTask}
-                  onFileUpload={handleFileUpload}
                 />
               )}
               {currentStep === 2 && (
