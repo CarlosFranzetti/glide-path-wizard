@@ -192,7 +192,7 @@ const PreMigrationStep = ({
   completedTasks,
   onToggleTask,
 }: PreMigrationStepProps) => {
-  const criticalTasksComplete = ["check-database", "backup-db"].every((id) =>
+  const criticalTasksComplete = ["export-code", "check-database", "backup-db"].every((id) =>
     completedTasks.includes(id)
   );
 
