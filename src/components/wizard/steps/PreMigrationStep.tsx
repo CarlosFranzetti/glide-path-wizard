@@ -46,6 +46,16 @@ grep -r "DATABASE" .
 grep -r "SUPABASE" .`,
   },
   {
+    id: "gitignore-env",
+    title: "Add .env to .gitignore (if applicable)",
+    description:
+      "If your app uses a database, make sure secrets in .env are never committed",
+    importance: "recommended" as const,
+    code: `# If your app uses a database, protect secrets in .env
+# Add .env to .gitignore so credentials aren't committed
+echo ".env" >> .gitignore`,
+  },
+  {
     id: "backup-db",
     title: "Export database & environment variables (if applicable)",
     description: "If you found a database, export it along with all environment variables",
