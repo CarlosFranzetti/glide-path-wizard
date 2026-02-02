@@ -110,6 +110,14 @@ git remote -v
 - Select visibility (Private or Public)
 - **Important:** Do NOT initialize with README (you'll push existing code)
 
+##### 2a. If you have a database, add `.env` to your `.gitignore`
+
+If your app uses a database, your `.env` file likely contains secrets such as database URLs and credentials. Add `.env` to `.gitignore` so those secrets are never committed to GitHub or shared publicly.
+
+```bash
+echo ".env" >> .gitignore
+```
+
 #### 3. Push your code to GitHub
 
 **If you don't have Git initialized yet:**
