@@ -13,6 +13,7 @@ dist-ssr
 *.local
 
 # Environment variables
+# Note: *.local above covers .env*.local, but we list them explicitly for clarity
 .env
 .env.development
 .env.test
