@@ -6,7 +6,7 @@ A step-by-step wizard to help you migrate your web projects to production hostin
 
 Before starting the migration process, ensure you have:
 
-- **Node.js** (v16 or higher) - [Download here](https://nodejs.org/)
+- **Node.js** (v18 or higher) - [Download here](https://nodejs.org/)
 - **Git** installed on your machine - [Download here](https://git-scm.com/downloads)
 - **npm** or **yarn** package manager (comes with Node.js)
 - A **GitHub account** - [Sign up here](https://github.com/signup)
@@ -20,7 +20,7 @@ Run these commands to verify your setup:
 
 ```bash
 # Check Node.js version
-node --version  # Should be v16 or higher
+node --version  # Should be v18 or higher
 
 # Check npm version
 npm --version
