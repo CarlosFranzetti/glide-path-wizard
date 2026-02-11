@@ -127,10 +127,10 @@ git push -u origin main`;
         </div>
         <div className="p-6 space-y-4">
           <p className="text-sm text-muted-foreground">
-            <strong>Important:</strong> If your app uses a database, your <code className="text-xs bg-background px-1 rounded">.env</code> file likely contains secrets such as database URLs and credentials. 
-            Add <code className="text-xs bg-background px-1 rounded">.env</code> to <code className="text-xs bg-background px-1 rounded">.gitignore</code> so those secrets are never committed to GitHub or shared publicly.
+            <strong>Important:</strong> If your app uses environment variables (database URLs, API keys, auth secrets, etc.), your <code className="text-xs bg-background px-1 rounded">.env</code> file contains sensitive information that should never be shared publicly. 
+            Add <code className="text-xs bg-background px-1 rounded">.env</code> to <code className="text-xs bg-background px-1 rounded">.gitignore</code> to prevent these secrets from being committed to GitHub.
           </p>
-          <CodeBlock code={`# If your app uses a database, protect secrets in .env\n# Add .env to .gitignore so credentials aren't committed\necho ".env" >> .gitignore`} language="bash" />
+          <CodeBlock code={`# Protect secrets in .env file\n# Add .env to .gitignore so credentials and API keys aren't committed\necho ".env" >> .gitignore`} language="bash" />
         </div>
       </div>
 
