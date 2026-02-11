@@ -119,6 +119,21 @@ git push -u origin main`;
         </div>
       </div>
 
+      {/* Add .env to .gitignore (if applicable) */}
+      <div className="rounded-xl border border-warning/30 bg-warning/5 overflow-hidden">
+        <div className="bg-warning/10 p-4 border-b border-warning/30 flex items-center gap-3">
+          <FolderGit2 className="h-5 w-5 text-warning" />
+          <span className="font-medium text-foreground">Protect Your Secrets</span>
+        </div>
+        <div className="p-6 space-y-4">
+          <p className="text-sm text-muted-foreground">
+            <strong>Important:</strong> If your app uses a database, your <code className="text-xs bg-background px-1 rounded">.env</code> file likely contains secrets such as database URLs and credentials. 
+            Add <code className="text-xs bg-background px-1 rounded">.env</code> to <code className="text-xs bg-background px-1 rounded">.gitignore</code> so those secrets are never committed to GitHub or shared publicly.
+          </p>
+          <CodeBlock code={`# If your app uses a database, protect secrets in .env\n# Add .env to .gitignore so credentials aren't committed\necho ".env" >> .gitignore`} language="bash" />
+        </div>
+      </div>
+
       {/* Repository Configuration */}
       <div className="rounded-xl border border-border bg-card overflow-hidden">
         <div className="bg-muted/50 p-4 border-b border-border flex items-center gap-3">
@@ -242,11 +257,12 @@ git push -u origin main`;
             
             {/* Troubleshooting tips */}
             <div className="mt-4 p-4 rounded-lg bg-muted/30 border border-border">
-              <p className="text-sm font-medium text-foreground mb-2">💡 Common Issues:</p>
+              <p className="text-sm font-medium text-foreground mb-2">💡 Common Issues & Solutions:</p>
               <ul className="text-sm text-muted-foreground space-y-1.5">
-                <li>• <strong>Authentication failed:</strong> Use a Personal Access Token instead of password</li>
+                <li>• <strong>Authentication failed:</strong> Use a Personal Access Token instead of password (<a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">GitHub Docs</a>)</li>
                 <li>• <strong>Branch 'master' vs 'main':</strong> Use <code className="text-xs bg-background px-1 rounded">git branch -M main</code> to rename</li>
-                <li>• <strong>Remote already exists:</strong> Use <code className="text-xs bg-background px-1 rounded">git remote set-url origin &lt;url&gt;</code></li>
+                <li>• <strong>Remote already exists:</strong> Use <code className="text-xs bg-background px-1 rounded">git remote set-url origin &lt;url&gt;</code> to change it</li>
+                <li>• <strong>Large files rejected:</strong> Add them to <code className="text-xs bg-background px-1 rounded">.gitignore</code> or use Git LFS</li>
               </ul>
             </div>
           </div>
