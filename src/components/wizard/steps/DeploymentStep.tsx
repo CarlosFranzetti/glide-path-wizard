@@ -180,6 +180,15 @@ const DeploymentStep = ({ onBack, selectedPlatform }: DeploymentStepProps) => {
               <label className="text-sm font-medium text-foreground">
                 Your deployment URL:
               </label>
+              <p className="text-xs text-muted-foreground mb-2">
+                Your deployment URL will typically follow one of these patterns:
+              </p>
+              <ul className="text-xs text-muted-foreground space-y-1 mb-3">
+                <li>• Vercel: <code className="bg-background px-1 rounded">https://your-app.vercel.app</code></li>
+                <li>• Netlify: <code className="bg-background px-1 rounded">https://your-app.netlify.app</code></li>
+                <li>• Render: <code className="bg-background px-1 rounded">https://your-app.onrender.com</code></li>
+                <li>• GitHub Pages: <code className="bg-background px-1 rounded">https://username.github.io/repo-name</code></li>
+              </ul>
               <div className="flex gap-2">
                 <Input
                   value={deploymentUrl}
@@ -246,11 +255,13 @@ const DeploymentStep = ({ onBack, selectedPlatform }: DeploymentStepProps) => {
             <div className="mt-6 p-4 rounded-lg bg-warning/5 border border-warning/30">
               <p className="text-sm font-medium text-foreground mb-2">⚠️ If Something's Wrong:</p>
               <ul className="text-sm text-muted-foreground space-y-1.5">
-                <li>• Check build logs on {config.name} dashboard</li>
-                <li>• Verify environment variables are set correctly</li>
-                <li>• Ensure build command and output directory match your local setup</li>
-                <li>• Check that all dependencies are in package.json</li>
-                <li>• Review {config.name} documentation for troubleshooting</li>
+                <li>• <strong>Build fails:</strong> Check build logs on {config.name} dashboard for errors</li>
+                <li>• <strong>Node.js version mismatch:</strong> Verify Node.js version matches between local and platform (should be v18+)</li>
+                <li>• <strong>Environment variables not working:</strong> Ensure they're set in platform dashboard and restart deployment</li>
+                <li>• <strong>404 on routes:</strong> Verify SPA routing configuration (rewrites/redirects) in config file</li>
+                <li>• <strong>Blank page:</strong> Check browser console for errors; verify output directory is correct</li>
+                <li>• <strong>Dependencies missing:</strong> Check all dependencies are in <code className="text-xs bg-background px-1 rounded">package.json</code>, not just <code className="text-xs bg-background px-1 rounded">devDependencies</code></li>
+                <li>• <strong>API calls fail:</strong> Check CORS settings and verify API URLs in environment variables</li>
               </ul>
             </div>
 
@@ -350,48 +361,81 @@ const DeploymentStep = ({ onBack, selectedPlatform }: DeploymentStepProps) => {
             Add Variable
           </Button>
         </div>
-        <div className="p-6 space-y-3">
-          {envVars.map((envVar, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="flex items-center gap-3"
-            >
-              <Input
-                value={envVar.key}
-                onChange={(e) => updateEnvVar(index, "key", e.target.value)}
-                placeholder="VARIABLE_NAME"
-                className="font-mono flex-1"
-              />
-              <span className="text-muted-foreground">=</span>
-              <div className="relative flex-1">
-                <Input
-                  type={envVar.visible ? "text" : "password"}
-                  value={envVar.value}
-                  onChange={(e) => updateEnvVar(index, "value", e.target.value)}
-                  placeholder="value"
-                  className="font-mono pr-10"
-                />
-                <button
-                  onClick={() => toggleVisibility(index)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                >
-                  {envVar.visible ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </button>
+        <div className="p-6 space-y-4">
+          {/* Environment variables documentation */}
+          <div className="rounded-lg bg-muted/30 border border-border p-4">
+            <p className="text-sm font-medium text-foreground mb-3">💡 Common Environment Variables:</p>
+            <div className="space-y-2 text-sm">
+              <div className="grid grid-cols-[140px,1fr,1fr] gap-3 text-xs font-medium text-muted-foreground border-b border-border pb-2">
+                <div>Variable</div>
+                <div>Description</div>
+                <div>Example</div>
               </div>
-              <button
-                onClick={() => removeEnvVar(index)}
-                className="rounded-lg p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+              <div className="grid grid-cols-[140px,1fr,1fr] gap-3 text-xs">
+                <code className="text-foreground bg-background px-1 rounded">VITE_API_URL</code>
+                <span className="text-muted-foreground">Your API endpoint URL</span>
+                <code className="text-muted-foreground">https://api.example.com</code>
+              </div>
+              <div className="grid grid-cols-[140px,1fr,1fr] gap-3 text-xs">
+                <code className="text-foreground bg-background px-1 rounded">DATABASE_URL</code>
+                <span className="text-muted-foreground">Database connection string</span>
+                <code className="text-muted-foreground">postgresql://user:pass@host:5432/db</code>
+              </div>
+              <div className="grid grid-cols-[140px,1fr,1fr] gap-3 text-xs">
+                <code className="text-foreground bg-background px-1 rounded">API_KEY</code>
+                <span className="text-muted-foreground">Third-party API keys</span>
+                <code className="text-muted-foreground">Your API key value</code>
+              </div>
+            </div>
+            <p className="text-xs text-warning mt-3">
+              ⚠️ <strong>Security Note:</strong> Never commit sensitive keys to Git. Always use environment variables.
+            </p>
+          </div>
+
+          {/* Environment variable inputs */}
+          <div className="space-y-3">
+            {envVars.map((envVar, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="flex items-center gap-3"
               >
-                <Trash2 className="h-4 w-4" />
-              </button>
-            </motion.div>
-          ))}
+                <Input
+                  value={envVar.key}
+                  onChange={(e) => updateEnvVar(index, "key", e.target.value)}
+                  placeholder="VARIABLE_NAME"
+                  className="font-mono flex-1"
+                />
+                <span className="text-muted-foreground">=</span>
+                <div className="relative flex-1">
+                  <Input
+                    type={envVar.visible ? "text" : "password"}
+                    value={envVar.value}
+                    onChange={(e) => updateEnvVar(index, "value", e.target.value)}
+                    placeholder="value"
+                    className="font-mono pr-10"
+                  />
+                  <button
+                    onClick={() => toggleVisibility(index)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  >
+                    {envVar.visible ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
+                <button
+                  onClick={() => removeEnvVar(index)}
+                  className="rounded-lg p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -414,6 +458,83 @@ const DeploymentStep = ({ onBack, selectedPlatform }: DeploymentStepProps) => {
             Deploy to {config.name}
             <ExternalLink className="h-5 w-5" />
           </Button>
+        </div>
+      </div>
+
+      {/* Platform-specific dashboard links */}
+      <div className="rounded-xl border border-border bg-card overflow-hidden">
+        <div className="bg-muted/50 p-4 border-b border-border flex items-center gap-3">
+          <ExternalLink className="h-5 w-5 text-foreground" />
+          <span className="font-medium text-foreground">Platform Dashboards</span>
+        </div>
+        <div className="p-6 space-y-3">
+          <p className="text-sm text-muted-foreground mb-4">
+            Access your platform dashboard to monitor deployments, configure settings, and manage your app:
+          </p>
+          <div className="space-y-2">
+            <a
+              href="https://vercel.com/dashboard"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-foreground/5">
+                  <span className="text-sm">▲</span>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground">Vercel Dashboard</p>
+                  <p className="text-xs text-muted-foreground">vercel.com/dashboard</p>
+                </div>
+              </div>
+              <ExternalLink className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+            </a>
+            <a
+              href="https://app.netlify.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-foreground/5">
+                  <span className="text-sm">◆</span>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground">Netlify Dashboard</p>
+                  <p className="text-xs text-muted-foreground">app.netlify.com</p>
+                </div>
+              </div>
+              <ExternalLink className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+            </a>
+            <a
+              href="https://dashboard.render.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-foreground/5">
+                  <span className="text-sm">●</span>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground">Render Dashboard</p>
+                  <p className="text-xs text-muted-foreground">dashboard.render.com</p>
+                </div>
+              </div>
+              <ExternalLink className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+            </a>
+            <div className="flex items-center justify-between p-3 rounded-lg border border-border bg-muted/30">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-foreground/5">
+                  <span className="text-sm">⚙️</span>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground">GitHub Pages</p>
+                  <p className="text-xs text-muted-foreground">Settings → Pages in your repository</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
