@@ -13,7 +13,9 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "wizard": "node src/cli/wizard.js",
+    "test:cli": "node src/cli/test/wizard.test.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
