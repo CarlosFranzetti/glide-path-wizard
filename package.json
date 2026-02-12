@@ -15,7 +15,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "wizard": "node src/cli/wizard.js",
-    "test:cli": "node src/cli/test/wizard.test.js"
+    "test:cli": "node src/cli/test/wizard.test.js",
+    "demo:cli": "node src/cli/test/demo.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

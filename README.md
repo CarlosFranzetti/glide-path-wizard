@@ -1,15 +1,15 @@
 # Glide Path Wizard
 
-A comprehensive migration assistant with both web-based and command-line interfaces to help you migrate your web projects to production hosting platforms.
+A comprehensive project setup and migration toolkit with both web-based and command-line interfaces.
 
-## Features
+## Components
 
 This repository contains two main components:
 
-### 1. Web-Based Migration Wizard
+### 1. Migration Assistant (Web-Based)
 A step-by-step web wizard to help you migrate your web projects to production hosting platforms.
 
-### 2. Command-Line Interface (CLI) Wizard
+### 2. CLI Wizard (Command-Line Interface)
 An interactive terminal-based wizard for project configuration and setup.
 
 For detailed CLI documentation, see [CLI_README.md](CLI_README.md).
