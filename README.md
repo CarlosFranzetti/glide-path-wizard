@@ -1,6 +1,32 @@
-# Migration Assistant
+# Glide Path Wizard
 
-A step-by-step wizard to help you migrate your web projects to production hosting platforms.
+A comprehensive project setup and migration toolkit with both web-based and command-line interfaces.
+
+## Components
+
+This repository contains two main components:
+
+### 1. Migration Assistant (Web-Based)
+A step-by-step web wizard to help you migrate your web projects to production hosting platforms.
+
+### 2. CLI Wizard (Command-Line Interface)
+An interactive terminal-based wizard for project configuration and setup.
+
+For detailed CLI documentation, see [CLI_README.md](CLI_README.md).
+
+## Quick Start
+
+### Web Application
+```bash
+npm install
+npm run dev
+```
+
+### CLI Wizard
+```bash
+npm install
+npm run wizard
+```
 
 ## Prerequisites
 
@@ -449,5 +475,33 @@ If you encounter issues not covered here:
    - [GitHub Pages Docs](https://docs.github.com/en/pages)
 3. **Search GitHub Issues** for similar problems
 4. **Ask for help** in platform community forums or Discord servers
+
+---
+
+## CLI Wizard
+
+This repository also includes a powerful Command-Line Interface (CLI) wizard for interactive project setup. The CLI wizard provides:
+
+- **Interactive terminal interface** with color-coded output
+- **Step-by-step guidance** through project configuration
+- **Input validation** for all user inputs
+- **Navigation controls**: quit, restart, and go back at any time
+- **Modular architecture** for easy extension
+- **Comprehensive error handling**
+
+### Running the CLI Wizard
+
+```bash
+npm run wizard
+```
+
+For complete CLI documentation, including:
+- Detailed feature list
+- Step-by-step guide
+- How to extend the wizard
+- Testing instructions
+- Troubleshooting
+
+See [CLI_README.md](CLI_README.md)
 
 ---
