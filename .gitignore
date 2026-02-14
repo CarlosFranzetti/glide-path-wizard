@@ -31,6 +31,9 @@ dist-ssr
 .gemini/
 gha-creds-*.json
 
+# CLI wizard state
+.wizard-state.json
+
 # Project credentials & secrets
 PROJECT_CREDENTIALS.txt
 PROJECT_CREDENTIALS.pdf

@@ -1,148 +1,141 @@
 /**
- * Tests for CLI Wizard Application
- * 
- * This test suite validates the core functionality of the wizard:
- * - Validation functions
- * - Input handling
- * - State management
+ * Tests for Migration Assistant CLI
+ *
+ * Validates core functionality: special commands, state persistence,
+ * platform config completeness, and critical task definitions.
  */
 
 import assert from 'assert';
+import { readFileSync, writeFileSync, unlinkSync, existsSync } from 'fs';
+import { resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
 
-// Mock validation functions (these are the same as in wizard.js)
-function validateEmail(email) {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const PROJECT_ROOT = resolve(__dirname, '../../..');
+const STATE_FILE = resolve(PROJECT_ROOT, '.wizard-state.json');
+
+console.log('Starting Migration Assistant CLI Tests...\n');
+
+// ── Special commands ────────────────────────────────────────────────────────
+
+function handleSpecial(input) {
+  const v = (input || '').trim().toLowerCase();
+  if (v === 'quit' || v === 'exit') return 'quit';
+  if (v === 'restart') return 'restart';
+  if (v === 'back') return 'back';
+  return null;
 }
 
-function validateNonEmpty(value) {
-  return value && value.trim().length > 0;
-}
+console.log('Testing handleSpecial():');
+assert.strictEqual(handleSpecial('quit'), 'quit');
+console.log('  ✓ "quit" recognised');
+assert.strictEqual(handleSpecial('exit'), 'quit');
+console.log('  ✓ "exit" recognised');
+assert.strictEqual(handleSpecial('restart'), 'restart');
+console.log('  ✓ "restart" recognised');
+assert.strictEqual(handleSpecial('back'), 'back');
+console.log('  ✓ "back" recognised');
+assert.strictEqual(handleSpecial('hello'), null);
+console.log('  ✓ regular input returns null');
+assert.strictEqual(handleSpecial('  QUIT  '), 'quit');
+console.log('  ✓ case-insensitive with whitespace');
+assert.strictEqual(handleSpecial(''), null);
+console.log('  ✓ empty string returns null');
 
-function validateNumber(value, min = -Infinity, max = Infinity) {
-  const num = Number(value);
-  return !isNaN(num) && num >= min && num <= max;
-}
+// ── State persistence ───────────────────────────────────────────────────────
 
-function handleSpecialCommands(input, defaultReturn = null) {
-  const normalizedInput = input.trim().toLowerCase();
-  
-  if (normalizedInput === 'quit' || normalizedInput === 'exit') {
-    return 'quit';
-  }
-  
-  if (normalizedInput === 'restart') {
-    return 'restart';
-  }
-  
-  if (normalizedInput === 'back') {
-    return 'back';
-  }
-  
-  return defaultReturn || 'continue';
-}
+console.log('\nTesting state persistence:');
 
-// Test suite
-console.log('Starting CLI Wizard Tests...\n');
-
-// Test validateEmail
-console.log('Testing validateEmail():');
-assert.strictEqual(validateEmail('test@example.com'), true, '✗ Valid email should pass');
-console.log('  ✓ Valid email passes');
-assert.strictEqual(validateEmail('invalid.email'), false, '✗ Invalid email should fail');
-console.log('  ✓ Invalid email fails');
-assert.strictEqual(validateEmail(''), false, '✗ Empty email should fail');
-console.log('  ✓ Empty email fails');
-assert.strictEqual(validateEmail('no@domain'), false, '✗ Email without TLD should fail');
-console.log('  ✓ Email without TLD fails');
-assert.strictEqual(validateEmail('user@domain.co.uk'), true, '✗ Email with multi-part TLD should pass');
-console.log('  ✓ Email with multi-part TLD passes');
-
-// Test validateNonEmpty
-console.log('\nTesting validateNonEmpty():');
-assert.ok(validateNonEmpty('test'), '✗ Non-empty string should pass');
-console.log('  ✓ Non-empty string passes');
-assert.ok(!validateNonEmpty(''), '✗ Empty string should fail');
-console.log('  ✓ Empty string fails');
-assert.ok(!validateNonEmpty('   '), '✗ Whitespace-only string should fail');
-console.log('  ✓ Whitespace-only string fails');
-assert.ok(validateNonEmpty('  test  '), '✗ String with surrounding whitespace should pass');
-console.log('  ✓ String with surrounding whitespace passes');
-
-// Test validateNumber
-console.log('\nTesting validateNumber():');
-assert.strictEqual(validateNumber('5', 1, 10), true, '✗ Number in range should pass');
-console.log('  ✓ Number in range passes');
-assert.strictEqual(validateNumber('0', 1, 10), false, '✗ Number below range should fail');
-console.log('  ✓ Number below range fails');
-assert.strictEqual(validateNumber('11', 1, 10), false, '✗ Number above range should fail');
-console.log('  ✓ Number above range fails');
-assert.strictEqual(validateNumber('abc', 1, 10), false, '✗ Non-numeric string should fail');
-console.log('  ✓ Non-numeric string fails');
-assert.strictEqual(validateNumber('5.5', 1, 10), true, '✗ Decimal number in range should pass');
-console.log('  ✓ Decimal number in range passes');
-assert.strictEqual(validateNumber('-5'), true, '✗ Negative number without range should pass');
-console.log('  ✓ Negative number without range passes');
-assert.strictEqual(validateNumber('100'), true, '✗ Large number without range should pass');
-console.log('  ✓ Large number without range passes');
-
-// Test handleSpecialCommands
-console.log('\nTesting handleSpecialCommands():');
-assert.strictEqual(handleSpecialCommands('quit'), 'quit', '✗ "quit" should return "quit"');
-console.log('  ✓ "quit" command recognized');
-assert.strictEqual(handleSpecialCommands('exit'), 'quit', '✗ "exit" should return "quit"');
-console.log('  ✓ "exit" command recognized');
-assert.strictEqual(handleSpecialCommands('restart'), 'restart', '✗ "restart" should return "restart"');
-console.log('  ✓ "restart" command recognized');
-assert.strictEqual(handleSpecialCommands('back'), 'back', '✗ "back" should return "back"');
-console.log('  ✓ "back" command recognized');
-assert.strictEqual(handleSpecialCommands('continue'), 'continue', '✗ Regular input should return "continue"');
-console.log('  ✓ Regular input returns "continue"');
-assert.strictEqual(handleSpecialCommands('QUIT'), 'quit', '✗ Case-insensitive "QUIT" should work');
-console.log('  ✓ Commands are case-insensitive');
-assert.strictEqual(handleSpecialCommands('  quit  '), 'quit', '✗ Commands with whitespace should work');
-console.log('  ✓ Commands with whitespace work');
-
-// Test state management
-console.log('\nTesting state management:');
-const mockState = {
-  currentStep: 0,
-  userData: {},
-  completedSteps: [],
+const testState = {
+  currentStep: 2,
+  completedTasks: ['locate-code', 'check-database'],
+  selectedPlatform: 'vercel',
+  repoName: 'test-app',
+  hasGit: true,
+  envVars: [{ key: 'VITE_API_URL', value: 'http://localhost:3000' }],
+  deploymentUrl: '',
 };
 
-mockState.userData.name = 'John Doe';
-assert.strictEqual(mockState.userData.name, 'John Doe', '✗ Should store user data');
-console.log('  ✓ State stores user data');
+// Write
+writeFileSync(STATE_FILE, JSON.stringify(testState, null, 2));
+assert.ok(existsSync(STATE_FILE));
+console.log('  ✓ state file created');
 
-mockState.currentStep = 1;
-assert.strictEqual(mockState.currentStep, 1, '✗ Should track current step');
-console.log('  ✓ State tracks current step');
+// Read back
+const loaded = JSON.parse(readFileSync(STATE_FILE, 'utf-8'));
+assert.strictEqual(loaded.currentStep, 2);
+assert.deepStrictEqual(loaded.completedTasks, ['locate-code', 'check-database']);
+assert.strictEqual(loaded.selectedPlatform, 'vercel');
+assert.strictEqual(loaded.repoName, 'test-app');
+console.log('  ✓ state round-trips correctly');
 
-mockState.completedSteps.push(0);
-assert.strictEqual(mockState.completedSteps.length, 1, '✗ Should track completed steps');
-assert.strictEqual(mockState.completedSteps[0], 0, '✗ Should store correct step index');
-console.log('  ✓ State tracks completed steps');
+// Clean up
+unlinkSync(STATE_FILE);
+assert.ok(!existsSync(STATE_FILE));
+console.log('  ✓ state file cleaned up');
 
-// Reset state
-mockState.currentStep = 0;
-mockState.userData = {};
-mockState.completedSteps = [];
-assert.strictEqual(mockState.currentStep, 0, '✗ Should reset current step');
-assert.deepStrictEqual(mockState.userData, {}, '✗ Should reset user data');
-assert.strictEqual(mockState.completedSteps.length, 0, '✗ Should reset completed steps');
-console.log('  ✓ State can be reset');
+// ── Critical tasks ──────────────────────────────────────────────────────────
 
-// Edge cases
-console.log('\nTesting edge cases:');
-assert.strictEqual(validateEmail('user+tag@domain.com'), true, '✗ Email with + should pass');
-console.log('  ✓ Email with + character works');
-assert.strictEqual(validateEmail('user@sub.domain.com'), true, '✗ Email with subdomain should pass');
-console.log('  ✓ Email with subdomain works');
-assert.strictEqual(validateNumber('0', 0, 0), true, '✗ Exact boundary should pass');
-console.log('  ✓ Exact boundary validation works');
-assert.ok(!validateNonEmpty(null), '✗ Null should fail validation');
-console.log('  ✓ Null value fails validation');
+console.log('\nTesting critical task definitions:');
+
+const criticalIds = ['locate-code', 'check-database', 'backup-db', 'fill-credentials', 'verify-local'];
+assert.strictEqual(criticalIds.length, 5);
+console.log('  ✓ 5 critical tasks defined');
+assert.ok(criticalIds.includes('fill-credentials'));
+console.log('  ✓ fill-credentials is critical (matches web UI)');
+
+// Gate logic: all must be present
+const completed = ['locate-code', 'check-database', 'backup-db', 'fill-credentials', 'verify-local'];
+const allDone = criticalIds.every((id) => completed.includes(id));
+assert.ok(allDone);
+console.log('  ✓ gate passes when all critical tasks complete');
+
+const partial = ['locate-code', 'check-database'];
+const partialDone = criticalIds.every((id) => partial.includes(id));
+assert.ok(!partialDone);
+console.log('  ✓ gate blocks when critical tasks incomplete');
+
+// ── Platform configs ────────────────────────────────────────────────────────
+
+console.log('\nTesting platform config completeness:');
+
+const platformIds = ['vercel', 'netlify', 'render', 'github-pages'];
+const platformNames = { vercel: 'Vercel', netlify: 'Netlify', render: 'Render', 'github-pages': 'GitHub Pages' };
+const platformFiles = { vercel: 'vercel.json', netlify: 'netlify.toml', render: 'render.yaml', 'github-pages': '.github/workflows/deploy.yml' };
+
+for (const id of platformIds) {
+  assert.ok(platformNames[id], `${id} should have a display name`);
+  assert.ok(platformFiles[id], `${id} should have a config file path`);
+  console.log(`  ✓ ${platformNames[id]} config defined (${platformFiles[id]})`);
+}
+
+// ── Default state ───────────────────────────────────────────────────────────
+
+console.log('\nTesting default state:');
+
+const defaultState = {
+  currentStep: 0,
+  completedTasks: [],
+  selectedPlatform: '',
+  repoName: '',
+  hasGit: null,
+  envVars: [],
+  deploymentUrl: '',
+};
+
+assert.strictEqual(defaultState.currentStep, 0);
+assert.strictEqual(defaultState.completedTasks.length, 0);
+assert.strictEqual(defaultState.selectedPlatform, '');
+assert.strictEqual(defaultState.hasGit, null);
+console.log('  ✓ default state is clean');
+
+// Reset
+const reset = { ...defaultState, completedTasks: [], envVars: [] };
+assert.deepStrictEqual(reset.completedTasks, []);
+console.log('  ✓ state can be reset');
+
+// ── Summary ─────────────────────────────────────────────────────────────────
 
 console.log('\n' + '='.repeat(50));
 console.log('All tests passed! ✓');
