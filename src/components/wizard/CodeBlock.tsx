@@ -55,7 +55,7 @@ const CodeBlock = ({ code, language = "bash", className }: CodeBlockProps) => {
           </AnimatePresence>
         </button>
       </div>
-      <pre className="overflow-x-auto bg-foreground/[0.03] p-4">
+      <pre className="bg-foreground/[0.03] p-4 whitespace-pre-wrap break-words">
         <code className="text-sm font-mono text-foreground/80">{code}</code>
       </pre>
     </div>
