@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { FileCode, GitBranch, Shield, FileText } from "lucide-react";
+import { FileCode, GitBranch, Shield, FileText, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ChecklistSection from "../ChecklistSection";
 
@@ -98,6 +98,37 @@ npm explain lodash
 
 # 6️⃣ Global dependencies (if needed)
 npm ls -g --depth=0`,
+  },
+  {
+    id: "fill-credentials",
+    title: "Fill out PROJECT_CREDENTIALS.txt with all logins & secrets",
+    description: "Open the PROJECT_CREDENTIALS.txt file in your project root and fill in all platform logins, API keys, database credentials, and dependencies. This is your single source of truth — never commit it to Git.",
+    importance: "critical" as const,
+    code: `# A PROJECT_CREDENTIALS.txt template is included in your project root.
+# Open it in your editor and fill in every section that applies:
+
+# 1. Open the file
+code PROJECT_CREDENTIALS.txt   # VS Code
+# or: nano PROJECT_CREDENTIALS.txt
+# or: open PROJECT_CREDENTIALS.txt
+
+# The file contains sections for:
+#   - Hosting platform logins (Vercel, Netlify, etc.)
+#   - GitHub credentials & tokens
+#   - Database credentials (Supabase, PostgreSQL, etc.)
+#   - All environment variables (API keys, secrets, etc.)
+#   - Domain & DNS information
+#   - Dependencies & versions
+#   - CI/CD secrets
+#   - Third-party service logins
+#   - Emergency & recovery info
+
+# IMPORTANT: This file is in .gitignore — it will NOT be committed.
+# Store it securely (encrypted drive, password manager, etc.)
+
+# Verify it's ignored by git:
+git status
+# PROJECT_CREDENTIALS.txt should NOT appear in the output`,
   },
   {
     id: "create-documentation",
@@ -225,7 +256,7 @@ const PreMigrationStep = ({
   completedTasks,
   onToggleTask,
 }: PreMigrationStepProps) => {
-  const criticalTasksComplete = ["locate-code", "check-database", "backup-db", "verify-local"].every((id) =>
+  const criticalTasksComplete = ["locate-code", "check-database", "backup-db", "fill-credentials", "verify-local"].every((id) =>
     completedTasks.includes(id)
   );
 
@@ -244,6 +275,44 @@ const PreMigrationStep = ({
         </p>
       </div>
 
+      {/* Credentials File Notice */}
+      <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-6">
+        <div className="flex items-start gap-3">
+          <Lock className="h-5 w-5 text-destructive mt-0.5 shrink-0" />
+          <div>
+            <h3 className="font-semibold text-foreground mb-2">
+              Credentials & Secrets File
+            </h3>
+            <p className="text-sm text-muted-foreground mb-3">
+              A <strong>PROJECT_CREDENTIALS.txt</strong> template is included in your project root.
+              Fill it in with all your logins, API keys, and secrets before deployment. It's your single
+              reference for everything you need.
+            </p>
+            <ul className="space-y-1.5 text-sm text-muted-foreground">
+              <li className="flex items-start gap-2">
+                <span className="text-destructive mt-0.5">•</span>
+                <span>Platform logins, GitHub tokens, database credentials</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-destructive mt-0.5">•</span>
+                <span>All environment variables and API keys</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-destructive mt-0.5">•</span>
+                <span>Dependencies, versions, and CI/CD secrets</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-destructive mt-0.5">•</span>
+                <span>Domain info, third-party services, and recovery details</span>
+              </li>
+            </ul>
+            <p className="text-xs text-muted-foreground mt-3 font-medium">
+              This file is in .gitignore and will never be committed. Store it securely.
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Documentation Notice */}
       <div className="rounded-xl border border-warning/30 bg-warning/5 p-6">
         <div className="flex items-start gap-3">
@@ -253,13 +322,10 @@ const PreMigrationStep = ({
               Documentation Best Practice
             </h3>
             <p className="text-sm text-muted-foreground mb-3">
-              Create a comprehensive <strong>migration-documentation.txt</strong> file containing:
+              Additionally, create a <strong>migration-documentation.txt</strong> for your dependency tree
+              and API endpoint inventory:
             </p>
             <ul className="space-y-1.5 text-sm text-muted-foreground">
-              <li className="flex items-start gap-2">
-                <span className="text-warning mt-0.5">•</span>
-                <span>Database backup information and env variables</span>
-              </li>
               <li className="flex items-start gap-2">
                 <span className="text-warning mt-0.5">•</span>
                 <span>Complete dependency tree and package explanations</span>
@@ -273,9 +339,6 @@ const PreMigrationStep = ({
                 <span>API endpoints found in your codebase</span>
               </li>
             </ul>
-            <p className="text-sm text-muted-foreground mt-3">
-              This file will be invaluable during deployment and troubleshooting! 📝
-            </p>
           </div>
         </div>
       </div>

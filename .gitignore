@@ -27,3 +27,15 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+.gemini/
+gha-creds-*.json
+
+# Project credentials & secrets
+PROJECT_CREDENTIALS.txt
+PROJECT_CREDENTIALS.pdf
+*.credentials.txt
+*.credentials.pdf
+.env
+.env.*
+.env.backup

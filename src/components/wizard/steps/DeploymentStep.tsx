@@ -10,6 +10,7 @@ import {
   Eye,
   EyeOff,
   PartyPopper,
+  FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -345,6 +346,22 @@ const DeploymentStep = ({ onBack, selectedPlatform }: DeploymentStepProps) => {
               <li>Commit: <code className="text-xs bg-background px-1 rounded">git add . && git commit -m "Add deployment config"</code></li>
               <li>Push: <code className="text-xs bg-background px-1 rounded">git push</code></li>
             </ol>
+          </div>
+        </div>
+      </div>
+
+      {/* Credentials reference */}
+      <div className="rounded-xl border border-primary/30 bg-primary/5 p-4">
+        <div className="flex items-start gap-3">
+          <FileText className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+          <div>
+            <p className="text-sm font-medium text-foreground">
+              Reference your PROJECT_CREDENTIALS.txt
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Open the credentials file you filled out in Step 1 to copy your environment variables,
+              API keys, and platform login details into {config.name}'s dashboard.
+            </p>
           </div>
         </div>
       </div>
