@@ -11,10 +11,13 @@ interface GitHubSetupStepProps {
 }
 
 const GitHubSetupStep = ({ onNext, onBack }: GitHubSetupStepProps) => {
+  const [githubUsername, setGithubUsername] = useState("");
   const [repoName, setRepoName] = useState("");
   const [isPrivate, setIsPrivate] = useState(true);
   const [setupComplete, setSetupComplete] = useState(false);
   const [hasGit, setHasGit] = useState<boolean | null>(null);
+
+  const owner = githubUsername || "username";
 
   const checkGitCommands = `# Check if your project already has Git initialized
 git status
@@ -39,17 +42,17 @@ git add .
 git commit -m "Initial commit"
 
 # Add your new GitHub repository as remote
-git remote add origin https://github.com/username/${repoName || "my-project"}.git
+git remote add origin https://github.com/${owner}/${repoName || "my-project"}.git
 
 # Push to main branch
 git push -u origin main`;
 
   const initCommandsHasGit = `# If you already have commits but no remote:
-git remote add origin https://github.com/username/${repoName || "my-project"}.git
+git remote add origin https://github.com/${owner}/${repoName || "my-project"}.git
 git push -u origin main
 
 # If you already have a remote but need to change it:
-git remote set-url origin https://github.com/username/${repoName || "my-project"}.git
+git remote set-url origin https://github.com/${owner}/${repoName || "my-project"}.git
 git push -u origin main
 
 # If you need to rename your branch to 'main':
@@ -134,6 +137,53 @@ git push -u origin main`;
         </div>
       </div>
 
+      {/* GitHub Login */}
+      <div className="rounded-xl border border-primary/30 bg-primary/5 overflow-hidden">
+        <div className="bg-primary/10 p-4 border-b border-primary/30 flex items-center gap-3">
+          <Github className="h-5 w-5 text-primary" />
+          <span className="font-medium text-foreground">Sign in to GitHub</span>
+        </div>
+        <div className="p-6 space-y-4">
+          <p className="text-sm text-muted-foreground">
+            Make sure you're logged in to GitHub before creating a repository.
+          </p>
+          <div className="flex items-center gap-4">
+            <Button
+              variant="hero"
+              className="gap-2"
+              onClick={() => window.open("https://github.com/login", "_blank")}
+            >
+              <Github className="h-4 w-4" />
+              Log in to GitHub
+              <ExternalLink className="h-4 w-4" />
+            </Button>
+          </div>
+          <div className="pt-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
+              Your GitHub Username
+            </label>
+            <Input
+              value={githubUsername}
+              onChange={(e) => setGithubUsername(e.target.value)}
+              placeholder="e.g. octocat"
+              className="max-w-xs"
+            />
+            {githubUsername && (
+              <p className="text-xs text-muted-foreground mt-2">
+                Your profile: <a
+                  href={`https://github.com/${githubUsername}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline"
+                >
+                  github.com/{githubUsername}
+                </a>
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* Repository Configuration */}
       <div className="rounded-xl border border-border bg-card overflow-hidden">
         <div className="bg-muted/50 p-4 border-b border-border flex items-center gap-3">
@@ -147,7 +197,7 @@ git push -u origin main`;
               Repository Name
             </label>
             <div className="flex items-center gap-2">
-              <span className="text-muted-foreground">github.com/username/</span>
+              <span className="text-muted-foreground">github.com/{owner}/</span>
               <Input
                 value={repoName}
                 onChange={(e) => setRepoName(e.target.value)}
@@ -282,12 +332,12 @@ git push -u origin main`;
                 Before continuing, make sure you can see your code at:
               </p>
               <a
-                href={`https://github.com/username/${repoName}`}
+                href={`https://github.com/${owner}/${repoName}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
               >
-                https://github.com/username/{repoName}
+                https://github.com/{owner}/{repoName}
                 <ExternalLink className="h-3 w-3" />
               </a>
               <p className="text-sm text-muted-foreground mt-3">
@@ -307,7 +357,7 @@ git push -u origin main`;
           variant="hero"
           size="lg"
           onClick={onNext}
-          disabled={!setupComplete || !repoName || hasGit === null}
+          disabled={!setupComplete || !repoName || !githubUsername || hasGit === null}
         >
           Continue to Platform Selection
           <ArrowRight className="h-4 w-4" />

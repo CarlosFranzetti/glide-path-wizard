@@ -191,6 +191,7 @@ const defaultState = () => ({
   currentStep: 0,
   completedTasks: [],
   selectedPlatform: '',
+  githubUsername: '',
   repoName: '',
   hasGit: null,
   envVars: [],
@@ -352,7 +353,22 @@ async function githubSetupStep() {
 
   print('  Create a GitHub repository and push your code.\n', c.dim);
 
+  // GitHub login
+  subheader('Sign in to GitHub');
+  info('Make sure you\'re logged in at: https://github.com/login');
+  console.log();
+
+  const ghUser = await askText('Your GitHub username', (v) => {
+    if (!v) { err('Username cannot be empty.'); return false; }
+    return true;
+  });
+  if (typeof ghUser === 'string' && ['quit','restart','back'].includes(ghUser)) return ghUser;
+  state.githubUsername = ghUser;
+  ok(`Username: ${ghUser}`);
+  info(`Profile: https://github.com/${ghUser}`);
+
   // Git status check
+  console.log();
   info('Check your current git status:');
   codeBlock('git status\ngit remote -v');
 
@@ -399,6 +415,7 @@ async function githubSetupStep() {
   ok(`Visibility: ${isPrivate ? 'Private' : 'Public'}`);
 
   // Show create-repo link
+  const owner = state.githubUsername || 'USERNAME';
   console.log();
   info('Create a new repository at:');
   print(`  ${c.bold}https://github.com/new${c.reset}`);
@@ -412,10 +429,10 @@ async function githubSetupStep() {
     if (typeof r === 'string') return r;
     await showOrExec('Stage all files', 'git add .');
     await showOrExec('Initial commit', 'git commit -m "Initial commit"');
-    await showOrExec('Add remote', `git remote add origin https://github.com/USERNAME/${repoName}.git`);
+    await showOrExec('Add remote', `git remote add origin https://github.com/${owner}/${repoName}.git`);
     await showOrExec('Push to main', 'git push -u origin main');
   } else {
-    await showOrExec('Add remote (or update)', `git remote add origin https://github.com/USERNAME/${repoName}.git`);
+    await showOrExec('Add remote (or update)', `git remote add origin https://github.com/${owner}/${repoName}.git`);
     await showOrExec('Rename branch to main (if needed)', 'git branch -M main');
     await showOrExec('Push to main', 'git push -u origin main');
   }
