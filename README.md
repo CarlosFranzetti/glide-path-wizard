@@ -92,7 +92,7 @@ git push -u origin main
 
 💡 **Pro Tip:** Add `.env` to `.gitignore` to protect secrets!
 ```bash
-echo ".env" > .gitignore
+echo ".env" >> .gitignore
 ```
 
 ---
