@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { FileCode, GitBranch, Shield, FileText, Lock } from "lucide-react";
+import { CheckCircle2, CircleHelp, GitBranch, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ChecklistSection from "../ChecklistSection";
 
@@ -9,255 +9,46 @@ interface PreMigrationStepProps {
   onToggleTask: (taskId: string) => void;
 }
 
-const preMigrationTasks = [
+const readinessTasks = [
   {
-    id: "locate-code",
-    title: "Locate your project code",
-    description: "Ensure you have your project source code on your local machine",
+    id: "run-local",
+    title: "Run the app locally",
+    description: "Install dependencies and confirm the app starts without blocking errors.",
     importance: "critical" as const,
-    code: `# If you already have your code locally:
-# ✅ Great! Skip to the next task.
-
-# If your code is on another platform (Replit, Glitch, etc.):
-# 1. Use their export/download feature to get your code
-# 2. If available, clone via Git:
-git clone <your-project-url>
-
-# If you have a ZIP file:
-# 1. Extract it to a folder on your computer
-# 2. Navigate to that folder in your terminal:
-cd /path/to/your-project`,
+    code: "npm install\nnpm run dev",
   },
   {
-    id: "check-database",
-    title: "Check for database usage",
-    description: "Verify if your application uses a database (Supabase, PostgreSQL, etc.)",
+    id: "confirm-env",
+    title: "Confirm required environment variables",
+    description: "Write down the variables you must set in your host dashboard.",
     importance: "critical" as const,
-    code: `# Check your project for database configuration
-# Look for these files/folders:
-# - supabase/ folder
-# - Database connection strings in .env files
-# - Keywords: DATABASE_URL, SUPABASE_URL, PG_CONNECTION
-
-# Common locations to check:
-cat .env
-cat .env.local
-grep -r "DATABASE" .
-grep -r "SUPABASE" .`,
+    code: "# Example\n# VITE_API_URL\n# VITE_AUTH_DOMAIN\n# DATABASE_URL (server-side only)",
   },
   {
-    id: "backup-db",
-    title: "Export database & environment variables (if applicable)",
-    description: "If you found a database, export it along with all environment variables",
+    id: "protect-secrets",
+    title: "Verify secrets are not tracked by git",
+    description: "Ensure `.env` and secret files are ignored before pushing.",
     importance: "critical" as const,
-    code: `# Export Supabase database
-supabase db dump -f backup.sql
-
-# List all env variables
-printenv | grep -E '^(VITE_|SUPABASE_|API_)' > .env.backup`,
+    code: "git status\ncat .gitignore",
   },
   {
-    id: "document-integrations",
-    title: "Document third-party integrations",
-    description: "Use npm commands to explore and document all dependencies",
-    importance: "recommended" as const,
-    code: `# Here are the useful npm commands to see dependencies,
-# from "quick peek" to "deep detective mode" 🕵️‍♂️
-
-# 1️⃣ List installed dependencies (basic)
-npm ls
-# Shows the full dependency tree (can be... a lot 😅)
-
-# Limit the depth:
-npm ls --depth=0
-# ➡️ Just your direct dependencies (sanity saver)
-
-# 2️⃣ See dependencies from package.json
-npm pkg get dependencies
-npm pkg get devDependencies
-# Clean, no installs involved
-
-# 3️⃣ Check a specific package's dependency tree
-npm ls react
-# Or with depth control:
-npm ls react --depth=1
-
-# 4️⃣ See outdated dependencies
-npm outdated
-# Shows:
-# - Current version
-# - Wanted version
-# - Latest version
-# (a.k.a. "how behind am I really?")
-
-# 5️⃣ Find why a package exists (very useful)
-npm explain <package-name>
-# Example:
-npm explain lodash
-# ➡️ Tells you which package pulled it in and why
-
-# 6️⃣ Global dependencies (if needed)
-npm ls -g --depth=0`,
-  },
-  {
-    id: "fill-credentials",
-    title: "Fill out PROJECT_CREDENTIALS.txt with all logins & secrets",
-    description: "Open the PROJECT_CREDENTIALS.txt file in your project root and fill in all platform logins, API keys, database credentials, and dependencies. This is your single source of truth — never commit it to Git.",
-    importance: "critical" as const,
-    code: `# A PROJECT_CREDENTIALS.txt template is included in your project root.
-# Open it in your editor and fill in every section that applies:
-
-# 1. Open the file
-code PROJECT_CREDENTIALS.txt   # VS Code
-# or: nano PROJECT_CREDENTIALS.txt
-# or: open PROJECT_CREDENTIALS.txt
-
-# The file contains sections for:
-#   - Hosting platform logins (Vercel, Netlify, etc.)
-#   - GitHub credentials & tokens
-#   - Database credentials (Supabase, PostgreSQL, etc.)
-#   - All environment variables (API keys, secrets, etc.)
-#   - Domain & DNS information
-#   - Dependencies & versions
-#   - CI/CD secrets
-#   - Third-party service logins
-#   - Emergency & recovery info
-
-# IMPORTANT: This file is in .gitignore — it will NOT be committed.
-# Store it securely (encrypted drive, password manager, etc.)
-
-# Verify it's ignored by git:
-git status
-# PROJECT_CREDENTIALS.txt should NOT appear in the output`,
-  },
-  {
-    id: "create-documentation",
-    title: "Create a migration documentation file",
-    description: "Collect all database, env, dependencies, and API information into a single file",
-    importance: "recommended" as const,
-    code: `# Create a comprehensive migration documentation file
-
-# Step 1: Create the file
-touch migration-documentation.txt
-
-# Step 2: Add database backup info
-echo "=== DATABASE BACKUP ===" >> migration-documentation.txt
-echo "Backup created: $(date)" >> migration-documentation.txt
-ls -lh backup.sql >> migration-documentation.txt
-echo "" >> migration-documentation.txt
-
-# Step 3: Add environment variables
-echo "=== ENVIRONMENT VARIABLES ===" >> migration-documentation.txt
-cat .env.backup >> migration-documentation.txt
-echo "" >> migration-documentation.txt
-
-# Step 4: Add direct dependencies
-echo "=== DIRECT DEPENDENCIES ===" >> migration-documentation.txt
-npm ls --depth=0 >> migration-documentation.txt
-echo "" >> migration-documentation.txt
-
-# Step 5: Add outdated packages
-echo "=== OUTDATED PACKAGES ===" >> migration-documentation.txt
-npm outdated >> migration-documentation.txt
-echo "" >> migration-documentation.txt
-
-# Step 6: Add detailed explanations for key packages
-# (You'll need to run this for each major package)
-echo "=== PACKAGE EXPLANATIONS ===" >> migration-documentation.txt
-echo "--- React ---" >> migration-documentation.txt
-npm explain react >> migration-documentation.txt
-echo "" >> migration-documentation.txt
-echo "--- Vite ---" >> migration-documentation.txt
-npm explain vite >> migration-documentation.txt
-echo "" >> migration-documentation.txt
-
-# Step 7: Document APIs and services manually
-echo "=== THIRD-PARTY APIS & SERVICES ===" >> migration-documentation.txt
-echo "List your APIs, authentication services, payment processors, etc." >> migration-documentation.txt
-echo "" >> migration-documentation.txt
-
-# Optional: Search for API endpoints in code
-echo "=== API ENDPOINTS FOUND IN CODE ===" >> migration-documentation.txt
-grep -r "https://" src/ --include="*.ts" --include="*.tsx" --include="*.js" --include="*.jsx" | grep -v "node_modules" >> migration-documentation.txt
-
-# View the final documentation
-cat migration-documentation.txt`,
-  },
-  {
-    id: "test-locally",
-    title: "Test application locally",
-    description: "Ensure your app runs correctly in a local development environment",
-    importance: "recommended" as const,
-    code: `# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-
-# Run tests if available
-npm test`,
-  },
-  {
-    id: "verify-local",
-    title: "Verify local development works",
-    description: "Confirm your application runs correctly on your local machine before deployment",
-    importance: "critical" as const,
-    code: `# Navigate to your project directory
-cd /path/to/your-project
-
-# Install dependencies (if not already installed)
-npm install
-
-# Start the development server
-npm run dev
-
-# ✅ Verify the app opens in your browser and works correctly
-# ✅ Check the terminal for any errors
-# ✅ Test key features to ensure everything functions
-
-# If you see errors, fix them before proceeding to deployment`,
-  },
-  {
-    id: "create-backup",
-    title: "Create project backup (optional)",
-    description: "Create a backup ZIP file before making changes",
+    id: "backup-optional",
+    title: "Create an optional snapshot backup",
+    description: "Create a quick archive before changing deployment settings.",
     importance: "optional" as const,
-    code: `# Create a ZIP archive of your project for safekeeping
-# Exclude node_modules and build files to keep it small
-
-# On macOS/Linux:
-zip -r project-backup-$(date +%Y%m%d).zip . -x "node_modules/*" -x ".git/*" -x "dist/*" -x "build/*"
-
-# On Windows (PowerShell):
-# $date = Get-Date -Format "yyyyMMdd"
-# Compress-Archive -Path . -DestinationPath "project-backup-$date.zip"
-
-# Verify the backup was created
-ls -lh project-backup-*.zip`,
-  },
-  {
-    id: "review-deps",
-    title: "Review dependencies for compatibility",
-    description: "Check that all npm packages are up-to-date and compatible",
-    importance: "optional" as const,
-    code: `# Check for outdated packages
-npm outdated
-
-# Update packages
-npm update
-
-# Check for security vulnerabilities
-npm audit`,
+    code: "zip -r backup.zip . -x \"node_modules/*\" -x \".git/*\"",
   },
 ];
+
+const requiredTaskIds = ["run-local", "confirm-env", "protect-secrets"];
 
 const PreMigrationStep = ({
   onNext,
   completedTasks,
   onToggleTask,
 }: PreMigrationStepProps) => {
-  const criticalTasksComplete = ["locate-code", "check-database", "backup-db", "fill-credentials", "verify-local"].every((id) =>
-    completedTasks.includes(id)
+  const criticalTasksComplete = requiredTaskIds.every((id) =>
+    completedTasks.includes(id),
   );
 
   return (
@@ -267,97 +58,54 @@ const PreMigrationStep = ({
       exit={{ opacity: 0, y: -20 }}
       className="space-y-8"
     >
-      {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold text-foreground">Pre-Migration Checklist</h2>
+        <h2 className="text-2xl font-bold text-foreground">Project Readiness</h2>
         <p className="mt-2 text-muted-foreground">
-          Complete these tasks before migrating to ensure a smooth transition.
+          We will check the main prerequisites before touching deployment.
         </p>
       </div>
 
-      {/* Credentials File Notice */}
-      <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-6">
+      <div className="rounded-xl border border-primary/30 bg-primary/5 p-5">
         <div className="flex items-start gap-3">
-          <Lock className="h-5 w-5 text-destructive mt-0.5 shrink-0" />
-          <div>
-            <h3 className="font-semibold text-foreground mb-2">
-              Credentials & Secrets File
-            </h3>
-            <p className="text-sm text-muted-foreground mb-3">
-              A <strong>PROJECT_CREDENTIALS.txt</strong> template is included in your project root.
-              Fill it in with all your logins, API keys, and secrets before deployment. It's your single
-              reference for everything you need.
-            </p>
-            <ul className="space-y-1.5 text-sm text-muted-foreground">
-              <li className="flex items-start gap-2">
-                <span className="text-destructive mt-0.5">•</span>
-                <span>Platform logins, GitHub tokens, database credentials</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-destructive mt-0.5">•</span>
-                <span>All environment variables and API keys</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-destructive mt-0.5">•</span>
-                <span>Dependencies, versions, and CI/CD secrets</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-destructive mt-0.5">•</span>
-                <span>Domain info, third-party services, and recovery details</span>
-              </li>
-            </ul>
-            <p className="text-xs text-muted-foreground mt-3 font-medium">
-              This file is in .gitignore and will never be committed. Store it securely.
-            </p>
+          <CircleHelp className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+          <div className="space-y-2">
+            <h3 className="font-semibold text-foreground">How this step works</h3>
+            <ol className="list-decimal pl-5 text-sm text-muted-foreground space-y-1">
+              <li>Confirm the app runs locally (this catches most blockers early).</li>
+              <li>List your production environment variables.</li>
+              <li>Double-check secrets are excluded from git before pushing.</li>
+            </ol>
           </div>
         </div>
       </div>
 
-      {/* Documentation Notice */}
-      <div className="rounded-xl border border-warning/30 bg-warning/5 p-6">
+      <div className="rounded-xl border border-warning/30 bg-warning/5 p-5">
         <div className="flex items-start gap-3">
-          <FileText className="h-5 w-5 text-warning mt-0.5 shrink-0" />
+          <Shield className="mt-0.5 h-5 w-5 shrink-0 text-warning" />
           <div>
-            <h3 className="font-semibold text-foreground mb-2">
-              Documentation Best Practice
-            </h3>
-            <p className="text-sm text-muted-foreground mb-3">
-              Additionally, create a <strong>migration-documentation.txt</strong> for your dependency tree
-              and API endpoint inventory:
-            </p>
-            <ul className="space-y-1.5 text-sm text-muted-foreground">
-              <li className="flex items-start gap-2">
-                <span className="text-warning mt-0.5">•</span>
-                <span>Complete dependency tree and package explanations</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-warning mt-0.5">•</span>
-                <span>All third-party APIs and services used</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-warning mt-0.5">•</span>
-                <span>API endpoints found in your codebase</span>
-              </li>
+            <h3 className="font-semibold text-foreground">Main things to check</h3>
+            <ul className="mt-2 text-sm text-muted-foreground space-y-1">
+              <li>• Local app starts and core page loads.</li>
+              <li>• You know which env vars belong in hosting settings.</li>
+              <li>• No API keys or passwords appear in tracked files.</li>
             </ul>
           </div>
         </div>
       </div>
 
-      {/* Checklist */}
       <ChecklistSection
-        title="Preparation Tasks"
-        description="Essential tasks before starting the migration"
-        icon={<FileCode className="h-5 w-5" />}
-        tasks={preMigrationTasks}
+        title="Readiness Checklist"
+        description="Complete the critical tasks to unlock the next step"
+        icon={<CheckCircle2 className="h-5 w-5" />}
+        tasks={readinessTasks}
         completedTasks={completedTasks}
         onToggleTask={onToggleTask}
       />
 
-      {/* Action buttons */}
       <div className="flex items-center justify-between pt-4">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Shield className="h-4 w-4" />
-          <span>Your data stays local and secure</span>
+          <span>Progress is saved locally in your browser.</span>
         </div>
         <Button
           variant="hero"
@@ -365,7 +113,7 @@ const PreMigrationStep = ({
           onClick={onNext}
           disabled={!criticalTasksComplete}
         >
-          Continue to GitHub Setup
+          Continue to Repository Setup
           <GitBranch className="h-4 w-4" />
         </Button>
       </div>

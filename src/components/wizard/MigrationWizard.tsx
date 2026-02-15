@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { Rocket, RotateCcw } from "lucide-react";
 import {
   AlertDialog,
@@ -15,30 +15,24 @@ import {
 import ProgressIndicator from "./ProgressIndicator";
 import PreMigrationStep from "./steps/PreMigrationStep";
 import GitHubSetupStep from "./steps/GitHubSetupStep";
-import PlatformSelectionStep from "./steps/PlatformSelectionStep";
 import DeploymentStep from "./steps/DeploymentStep";
 import { useWizardPersistence } from "@/hooks/use-wizard-persistence";
 
 const steps = [
   {
     id: 1,
-    title: "Pre-Migration",
-    description: "Prepare your project for migration",
+    title: "Project Readiness",
+    description: "Confirm the app is ready to ship",
   },
   {
     id: 2,
-    title: "GitHub Setup",
-    description: "Create and configure repository",
+    title: "Repository Setup",
+    description: "Push your project to GitHub",
   },
   {
     id: 3,
-    title: "Platform Selection",
-    description: "Choose your hosting platform",
-  },
-  {
-    id: 4,
-    title: "Deployment",
-    description: "Configure and deploy your app",
+    title: "Deploy and Verify",
+    description: "Choose a host and validate production",
   },
 ];
 
@@ -60,22 +54,21 @@ const MigrationWizard = () => {
     setCompletedTasks((prev) =>
       prev.includes(taskId)
         ? prev.filter((id) => id !== taskId)
-        : [...prev, taskId]
+        : [...prev, taskId],
     );
   };
 
-  const nextStep = () => setCurrentStep((prev) => Math.min(prev + 1, 4));
+  const nextStep = () => setCurrentStep((prev) => Math.min(prev + 1, steps.length));
   const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 1));
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30">
-      {/* Resume Progress Dialog */}
       <AlertDialog open={showResumeDialog} onOpenChange={setShowResumeDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Resume Previous Progress?</AlertDialogTitle>
             <AlertDialogDescription>
-              You were on <strong>Step {currentStep}: {steps[currentStep - 1]?.title}</strong> with{" "}
+              You were on <strong>Step {currentStep}: {steps[currentStep - 1]?.title}</strong> with {" "}
               {completedTasks.length} task{completedTasks.length !== 1 ? "s" : ""} completed.
               Would you like to continue where you left off?
             </AlertDialogDescription>
@@ -96,8 +89,7 @@ const MigrationWizard = () => {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Header */}
-      <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-50">
+      <header className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-sm">
         <div className="container mx-auto flex items-center justify-between py-4">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl gradient-hero">
@@ -105,18 +97,17 @@ const MigrationWizard = () => {
             </div>
             <div>
               <h1 className="font-bold text-foreground">Migration Assistant</h1>
-              <p className="text-xs text-muted-foreground">Deploy to Production</p>
+              <p className="text-xs text-muted-foreground">Deployment Flow</p>
             </div>
           </div>
           <div className="flex items-center gap-4">
             <div className="text-sm text-muted-foreground">
               Step {currentStep} of {steps.length}
             </div>
-            {/* Reset button with confirmation */}
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <button
-                  className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                  className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                   title="Reset progress"
                 >
                   <RotateCcw className="h-3.5 w-3.5" />
@@ -127,8 +118,7 @@ const MigrationWizard = () => {
                 <AlertDialogHeader>
                   <AlertDialogTitle>Reset All Progress?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    This will clear all completed tasks, selections, and return you to Step 1.
-                    This action cannot be undone.
+                    This clears checklist completion, selected host, and step position.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -148,7 +138,6 @@ const MigrationWizard = () => {
 
       <main className="container mx-auto py-8">
         <div className="grid gap-8 lg:grid-cols-[280px,1fr]">
-          {/* Sidebar with progress */}
           <aside className="lg:sticky lg:top-24 lg:h-fit">
             <div className="rounded-xl border border-border bg-card p-6">
               <h2 className="mb-6 font-semibold text-foreground">Progress</h2>
@@ -156,7 +145,6 @@ const MigrationWizard = () => {
             </div>
           </aside>
 
-          {/* Main content area */}
           <div className="min-h-[600px]">
             <AnimatePresence mode="wait">
               {currentStep === 1 && (
@@ -175,18 +163,11 @@ const MigrationWizard = () => {
                 />
               )}
               {currentStep === 3 && (
-                <PlatformSelectionStep
-                  key="step-3"
-                  onNext={nextStep}
-                  onBack={prevStep}
-                  onSelectPlatform={setSelectedPlatform}
-                />
-              )}
-              {currentStep === 4 && (
                 <DeploymentStep
-                  key="step-4"
+                  key="step-3"
                   onBack={prevStep}
                   selectedPlatform={selectedPlatform}
+                  onSelectPlatform={setSelectedPlatform}
                 />
               )}
             </AnimatePresence>

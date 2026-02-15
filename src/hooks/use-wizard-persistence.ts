@@ -1,11 +1,16 @@
 import { useState, useEffect, useCallback } from "react";
+import {
+  type DeploymentHostId,
+  isDeploymentHostId,
+} from "@/lib/deployment-hosts";
 
 const STORAGE_KEY = "migration-wizard-state";
+const MAX_STEP = 3;
 
 interface WizardState {
   currentStep: number;
   completedTasks: string[];
-  selectedPlatform: string;
+  selectedPlatform: DeploymentHostId | "";
   repoName: string;
   lastUpdated: number;
 }
@@ -18,20 +23,32 @@ const defaultState: WizardState = {
   lastUpdated: Date.now(),
 };
 
+function clampStep(step: number): number {
+  if (step < 1) return 1;
+  if (step > MAX_STEP) return MAX_STEP;
+  return step;
+}
+
 function loadState(): WizardState {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (!stored) return defaultState;
-    const parsed = JSON.parse(stored) as WizardState;
-    // Validate shape
-    if (
-      typeof parsed.currentStep !== "number" ||
-      !Array.isArray(parsed.completedTasks) ||
-      typeof parsed.selectedPlatform !== "string"
-    ) {
-      return defaultState;
-    }
-    return parsed;
+
+    const parsed = JSON.parse(stored) as Partial<WizardState>;
+    const rawStep = typeof parsed.currentStep === "number" ? parsed.currentStep : 1;
+    const selectedPlatform =
+      typeof parsed.selectedPlatform === "string" && isDeploymentHostId(parsed.selectedPlatform)
+        ? parsed.selectedPlatform
+        : "";
+
+    return {
+      ...defaultState,
+      ...parsed,
+      currentStep: clampStep(rawStep),
+      completedTasks: Array.isArray(parsed.completedTasks) ? parsed.completedTasks : [],
+      selectedPlatform,
+      repoName: typeof parsed.repoName === "string" ? parsed.repoName : "",
+    };
   } catch {
     return defaultState;
   }
@@ -41,10 +58,10 @@ function saveState(state: WizardState) {
   try {
     localStorage.setItem(
       STORAGE_KEY,
-      JSON.stringify({ ...state, lastUpdated: Date.now() })
+      JSON.stringify({ ...state, lastUpdated: Date.now() }),
     );
   } catch {
-    // Storage full or unavailable — fail silently
+    // Storage full or unavailable.
   }
 }
 
@@ -55,12 +72,15 @@ export function useWizardPersistence() {
     saveState(state);
   }, [state]);
 
-  const setCurrentStep = useCallback((step: number | ((prev: number) => number)) => {
-    setState((prev) => ({
-      ...prev,
-      currentStep: typeof step === "function" ? step(prev.currentStep) : step,
-    }));
-  }, []);
+  const setCurrentStep = useCallback(
+    (step: number | ((prev: number) => number)) => {
+      setState((prev) => ({
+        ...prev,
+        currentStep: clampStep(typeof step === "function" ? step(prev.currentStep) : step),
+      }));
+    },
+    [],
+  );
 
   const setCompletedTasks = useCallback(
     (tasks: string[] | ((prev: string[]) => string[])) => {
@@ -70,10 +90,10 @@ export function useWizardPersistence() {
           typeof tasks === "function" ? tasks(prev.completedTasks) : tasks,
       }));
     },
-    []
+    [],
   );
 
-  const setSelectedPlatform = useCallback((platform: string) => {
+  const setSelectedPlatform = useCallback((platform: DeploymentHostId | "") => {
     setState((prev) => ({ ...prev, selectedPlatform: platform }));
   }, []);
 
@@ -86,7 +106,10 @@ export function useWizardPersistence() {
     localStorage.removeItem(STORAGE_KEY);
   }, []);
 
-  const hasExistingProgress = state.currentStep > 1 || state.completedTasks.length > 0;
+  const hasExistingProgress =
+    state.currentStep > 1 ||
+    state.completedTasks.length > 0 ||
+    state.selectedPlatform !== "";
 
   return {
     currentStep: state.currentStep,

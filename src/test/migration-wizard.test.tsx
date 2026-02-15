@@ -7,9 +7,9 @@ describe("MigrationWizard", () => {
     render(<MigrationWizard />);
 
     expect(screen.getByText("Migration Assistant")).toBeInTheDocument();
-    expect(screen.getByText("Step 1 of 4")).toBeInTheDocument();
+    expect(screen.getByText("Step 1 of 3")).toBeInTheDocument();
 
-    const continueButton = screen.getByRole("button", { name: /continue to github setup/i });
+    const continueButton = screen.getByRole("button", { name: /continue to repository setup/i });
     expect(continueButton).toBeDisabled();
   });
 });

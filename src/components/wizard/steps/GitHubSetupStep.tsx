@@ -1,6 +1,12 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { GitBranch, Github, ExternalLink, Check, ArrowRight, FolderGit2 } from "lucide-react";
+import {
+  ArrowRight,
+  Check,
+  ExternalLink,
+  Github,
+  Info,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import CodeBlock from "../CodeBlock";
@@ -13,51 +19,28 @@ interface GitHubSetupStepProps {
 const GitHubSetupStep = ({ onNext, onBack }: GitHubSetupStepProps) => {
   const [githubUsername, setGithubUsername] = useState("");
   const [repoName, setRepoName] = useState("");
-  const [isPrivate, setIsPrivate] = useState(true);
-  const [setupComplete, setSetupComplete] = useState(false);
   const [hasGit, setHasGit] = useState<boolean | null>(null);
+  const [setupComplete, setSetupComplete] = useState(false);
 
   const owner = githubUsername || "username";
+  const repository = repoName || "my-app";
 
-  const checkGitCommands = `# Check if your project already has Git initialized
-git status
+  const commands = useMemo(() => {
+    if (hasGit) {
+      return `# Existing git repository\ngit remote -v\ngit remote add origin https://github.com/${owner}/${repository}.git\n# If remote already exists, use:\n# git remote set-url origin https://github.com/${owner}/${repository}.git\n\ngit push -u origin main`;
+    }
 
-# If you see "not a git repository":
-# ➡️ You need to initialize Git (see commands below)
+    return `# Initialize and push\ngit init\ngit add .\ngit commit -m "Initial commit"\ngit branch -M main\ngit remote add origin https://github.com/${owner}/${repository}.git\ngit push -u origin main`;
+  }, [hasGit, owner, repository]);
 
-# If you see branch info and file status:
-# ➡️ You already have Git! Check if you have a remote:
-git remote -v
+  const checks = {
+    identity: githubUsername.trim().length > 0,
+    repo: repoName.trim().length > 0,
+    gitChoice: hasGit !== null,
+    pushed: setupComplete,
+  };
 
-# If you see a GitHub URL:
-# ➡️ Your code might already be on GitHub!`;
-
-  const initCommandsNoGit = `# Initialize git repository (first time)
-git init
-
-# Add all files to Git
-git add .
-
-# Create your first commit
-git commit -m "Initial commit"
-
-# Add your new GitHub repository as remote
-git remote add origin https://github.com/${owner}/${repoName || "my-project"}.git
-
-# Push to main branch
-git push -u origin main`;
-
-  const initCommandsHasGit = `# If you already have commits but no remote:
-git remote add origin https://github.com/${owner}/${repoName || "my-project"}.git
-git push -u origin main
-
-# If you already have a remote but need to change it:
-git remote set-url origin https://github.com/${owner}/${repoName || "my-project"}.git
-git push -u origin main
-
-# If you need to rename your branch to 'main':
-git branch -M main
-git push -u origin main`;
+  const canContinue = Object.values(checks).every(Boolean);
 
   return (
     <motion.div
@@ -66,300 +49,163 @@ git push -u origin main`;
       exit={{ opacity: 0, y: -20 }}
       className="space-y-8"
     >
-      {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold text-foreground">GitHub Repository Setup</h2>
+        <h2 className="text-2xl font-bold text-foreground">Repository Setup</h2>
         <p className="mt-2 text-muted-foreground">
-          Create a new GitHub repository to host your migrated project.
+          We will create a GitHub repo and make sure your code is pushed correctly.
         </p>
       </div>
 
-      {/* Git Status Check */}
-      <div className="rounded-xl border border-warning/30 bg-warning/5 overflow-hidden">
-        <div className="bg-warning/10 p-4 border-b border-warning/30 flex items-center gap-3">
-          <FolderGit2 className="h-5 w-5 text-warning" />
-          <span className="font-medium text-foreground">Check Your Git Status</span>
-        </div>
-        <div className="p-6 space-y-4">
-          <p className="text-sm text-muted-foreground">
-            First, let's check if your project already has Git initialized:
-          </p>
-          <CodeBlock code={checkGitCommands} language="bash" />
-          
-          <div className="pt-2">
-            <p className="text-sm font-medium text-foreground mb-3">
-              Does your project already have Git initialized?
-            </p>
-            <div className="flex gap-3">
-              <button
-                onClick={() => setHasGit(false)}
-                className={`flex-1 rounded-lg border-2 px-4 py-3 transition-all ${
-                  hasGit === false
-                    ? "border-primary bg-primary/5"
-                    : "border-border hover:border-primary/50"
-                }`}
-              >
-                <p className="font-medium text-foreground">No, I need to initialize Git</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  First time using Git with this project
-                </p>
-              </button>
-              <button
-                onClick={() => setHasGit(true)}
-                className={`flex-1 rounded-lg border-2 px-4 py-3 transition-all ${
-                  hasGit === true
-                    ? "border-primary bg-primary/5"
-                    : "border-border hover:border-primary/50"
-                }`}
-              >
-                <p className="font-medium text-foreground">Yes, I already have Git</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Just need to push to GitHub
-                </p>
-              </button>
-            </div>
+      <div className="rounded-xl border border-primary/30 bg-primary/5 p-5">
+        <div className="flex items-start gap-3">
+          <Info className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+          <div className="space-y-1 text-sm text-muted-foreground">
+            <p className="font-medium text-foreground">Step flow</p>
+            <p>1) Enter GitHub username + repo name</p>
+            <p>2) Pick whether git already exists locally</p>
+            <p>3) Run the generated commands and confirm the push</p>
           </div>
         </div>
       </div>
 
-      {/* Add .env to .gitignore (if applicable) */}
-      <div className="rounded-xl border border-warning/30 bg-warning/5 overflow-hidden">
-        <div className="bg-warning/10 p-4 border-b border-warning/30 flex items-center gap-3">
-          <FolderGit2 className="h-5 w-5 text-warning" />
-          <span className="font-medium text-foreground">Protect Your Secrets</span>
-        </div>
-        <div className="p-6 space-y-4">
-          <p className="text-sm text-muted-foreground">
-            <strong>Important:</strong> If your app uses environment variables (database URLs, API keys, auth secrets, etc.), your <code className="text-xs bg-background px-1 rounded">.env</code> file contains sensitive information that should never be shared publicly. 
-            Add <code className="text-xs bg-background px-1 rounded">.env</code> to <code className="text-xs bg-background px-1 rounded">.gitignore</code> to prevent these secrets from being committed to GitHub.
-          </p>
-          <CodeBlock code={`# Protect secrets in .env file\n# Add .env to .gitignore so credentials and API keys aren't committed\necho ".env" >> .gitignore`} language="bash" />
-        </div>
-      </div>
-
-      {/* GitHub Login */}
-      <div className="rounded-xl border border-primary/30 bg-primary/5 overflow-hidden">
-        <div className="bg-primary/10 p-4 border-b border-primary/30 flex items-center gap-3">
-          <Github className="h-5 w-5 text-primary" />
-          <span className="font-medium text-foreground">Sign in to GitHub</span>
-        </div>
-        <div className="p-6 space-y-4">
-          <p className="text-sm text-muted-foreground">
-            Make sure you're logged in to GitHub before creating a repository.
-          </p>
-          <div className="flex items-center gap-4">
-            <Button
-              variant="hero"
-              className="gap-2"
-              onClick={() => window.open("https://github.com/login", "_blank")}
-            >
-              <Github className="h-4 w-4" />
-              Log in to GitHub
-              <ExternalLink className="h-4 w-4" />
-            </Button>
-          </div>
-          <div className="pt-2">
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Your GitHub Username
+      <div className="rounded-xl border border-border bg-card p-6 space-y-5">
+        <div className="grid gap-4 md:grid-cols-2">
+          <div>
+            <label className="mb-2 block text-sm font-medium text-foreground">
+              GitHub username
             </label>
             <Input
               value={githubUsername}
               onChange={(e) => setGithubUsername(e.target.value)}
-              placeholder="e.g. octocat"
-              className="max-w-xs"
+              placeholder="octocat"
             />
-            {githubUsername && (
-              <p className="text-xs text-muted-foreground mt-2">
-                Your profile: <a
-                  href={`https://github.com/${githubUsername}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary hover:underline"
-                >
-                  github.com/{githubUsername}
-                </a>
-              </p>
-            )}
+          </div>
+          <div>
+            <label className="mb-2 block text-sm font-medium text-foreground">
+              Repository name
+            </label>
+            <Input
+              value={repoName}
+              onChange={(e) => setRepoName(e.target.value)}
+              placeholder="my-app"
+            />
           </div>
         </div>
-      </div>
 
-      {/* Repository Configuration */}
-      <div className="rounded-xl border border-border bg-card overflow-hidden">
-        <div className="bg-muted/50 p-4 border-b border-border flex items-center gap-3">
-          <Github className="h-5 w-5 text-foreground" />
-          <span className="font-medium text-foreground">Repository Settings</span>
+        <div className="flex flex-wrap gap-3">
+          <Button
+            variant="outline"
+            className="gap-2"
+            onClick={() => window.open("https://github.com/login", "_blank")}
+          >
+            <Github className="h-4 w-4" />
+            GitHub Login
+            <ExternalLink className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            className="gap-2"
+            onClick={() => window.open("https://github.com/new", "_blank")}
+          >
+            Create Repo
+            <ExternalLink className="h-4 w-4" />
+          </Button>
         </div>
-        <div className="p-6 space-y-6">
-          {/* Repo name */}
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Repository Name
-            </label>
-            <div className="flex items-center gap-2">
-              <span className="text-muted-foreground">github.com/{owner}/</span>
-              <Input
-                value={repoName}
-                onChange={(e) => setRepoName(e.target.value)}
-                placeholder="my-migrated-app"
-                className="max-w-xs"
-              />
-            </div>
-          </div>
 
-          {/* Visibility toggle */}
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-3">
-              Visibility
-            </label>
-            <div className="flex gap-3">
-              <button
-                onClick={() => setIsPrivate(true)}
-                className={`flex items-center gap-3 rounded-lg border-2 px-4 py-3 transition-all ${
-                  isPrivate
-                    ? "border-primary bg-primary/5"
-                    : "border-border hover:border-primary/50"
-                }`}
-              >
-                <div
-                  className={`h-4 w-4 rounded-full border-2 ${
-                    isPrivate ? "border-primary bg-primary" : "border-border"
-                  }`}
-                />
-                <div className="text-left">
-                  <p className="font-medium text-foreground">Private</p>
-                  <p className="text-sm text-muted-foreground">Only you can see this repository</p>
-                </div>
-              </button>
-              <button
-                onClick={() => setIsPrivate(false)}
-                className={`flex items-center gap-3 rounded-lg border-2 px-4 py-3 transition-all ${
-                  !isPrivate
-                    ? "border-primary bg-primary/5"
-                    : "border-border hover:border-primary/50"
-                }`}
-              >
-                <div
-                  className={`h-4 w-4 rounded-full border-2 ${
-                    !isPrivate ? "border-primary bg-primary" : "border-border"
-                  }`}
-                />
-                <div className="text-left">
-                  <p className="font-medium text-foreground">Public</p>
-                  <p className="text-sm text-muted-foreground">Anyone can see this repository</p>
-                </div>
-              </button>
-            </div>
-          </div>
-
-          {/* Create repo button */}
-          <div className="flex items-center gap-4">
-            <Button
-              variant="hero"
-              className="gap-2"
-              onClick={() => window.open("https://github.com/new", "_blank")}
-            >
-              <Github className="h-4 w-4" />
-              Create Repository on GitHub
-              <ExternalLink className="h-4 w-4" />
-            </Button>
+        <div>
+          <p className="mb-3 text-sm font-medium text-foreground">
+            Does this project already have git initialized?
+          </p>
+          <div className="flex gap-3">
             <button
-              onClick={() => setSetupComplete(!setupComplete)}
-              className={`flex items-center gap-2 rounded-lg border-2 px-4 py-2 transition-all ${
-                setupComplete
-                  ? "border-success bg-success/10 text-success"
-                  : "border-border text-muted-foreground hover:border-primary/50"
+              onClick={() => setHasGit(true)}
+              className={`rounded-lg border px-4 py-2 text-sm transition-colors ${
+                hasGit === true
+                  ? "border-primary bg-primary/10 text-foreground"
+                  : "border-border text-muted-foreground hover:border-primary/40"
               }`}
             >
-              <div
-                className={`flex h-5 w-5 items-center justify-center rounded-full border-2 ${
-                  setupComplete ? "border-success bg-success" : "border-current"
-                }`}
-              >
-                {setupComplete && <Check className="h-3 w-3 text-success-foreground" />}
-              </div>
-              <span className="text-sm font-medium">I've created the repository</span>
+              Yes, it already has git
+            </button>
+            <button
+              onClick={() => setHasGit(false)}
+              className={`rounded-lg border px-4 py-2 text-sm transition-colors ${
+                hasGit === false
+                  ? "border-primary bg-primary/10 text-foreground"
+                  : "border-border text-muted-foreground hover:border-primary/40"
+              }`}
+            >
+              No, initialize git
             </button>
           </div>
         </div>
       </div>
 
-      {/* Git Commands */}
       {hasGit !== null && (
         <div className="rounded-xl border border-border bg-card overflow-hidden">
-          <div className="bg-muted/50 p-4 border-b border-border flex items-center gap-3">
-            <FolderGit2 className="h-5 w-5 text-foreground" />
-            <span className="font-medium text-foreground">
-              {hasGit ? "Push Your Code to GitHub" : "Initialize Git & Push to GitHub"}
-            </span>
+          <div className="border-b border-border bg-muted/50 p-4">
+            <p className="font-medium text-foreground">Run these commands</p>
           </div>
           <div className="p-6">
-            <p className="text-sm text-muted-foreground mb-4">
-              {hasGit 
-                ? "Run these commands in your project directory to push to your new GitHub repository:"
-                : "Run these commands in your project directory to initialize Git and push to GitHub:"
-              }
-            </p>
-            <CodeBlock 
-              code={hasGit ? initCommandsHasGit : initCommandsNoGit} 
-              language="bash" 
-            />
-            
-            {/* Troubleshooting tips */}
-            <div className="mt-4 p-4 rounded-lg bg-muted/30 border border-border">
-              <p className="text-sm font-medium text-foreground mb-2">💡 Common Issues & Solutions:</p>
-              <ul className="text-sm text-muted-foreground space-y-1.5">
-                <li>• <strong>Authentication failed:</strong> Use a Personal Access Token instead of password (<a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">GitHub Docs</a>)</li>
-                <li>• <strong>Branch 'master' vs 'main':</strong> Use <code className="text-xs bg-background px-1 rounded">git branch -M main</code> to rename</li>
-                <li>• <strong>Remote already exists:</strong> Use <code className="text-xs bg-background px-1 rounded">git remote set-url origin &lt;url&gt;</code> to change it</li>
-                <li>• <strong>Large files rejected:</strong> Add them to <code className="text-xs bg-background px-1 rounded">.gitignore</code> or use Git LFS</li>
-              </ul>
+            <CodeBlock code={commands} language="bash" />
+            <div className="mt-4 rounded-lg bg-muted/40 p-4 text-sm text-muted-foreground space-y-2">
+              <p>
+                Confirm your repo URL is reachable:
+                <a
+                  className="ml-1 text-primary hover:underline"
+                  href={`https://github.com/${owner}/${repository}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  https://github.com/{owner}/{repository}
+                </a>
+              </p>
+              <p>
+                If push auth fails, use a GitHub Personal Access Token instead of password.
+              </p>
             </div>
+            <button
+              onClick={() => setSetupComplete((value) => !value)}
+              className={`mt-4 rounded-lg border px-4 py-2 text-sm transition-colors ${
+                setupComplete
+                  ? "border-success bg-success/10 text-success"
+                  : "border-border text-muted-foreground hover:border-primary/40"
+              }`}
+            >
+              {setupComplete ? "Repository push confirmed" : "I pushed the repository"}
+            </button>
           </div>
         </div>
       )}
 
-      {/* Verification */}
-      {setupComplete && (
-        <div className="rounded-xl border border-success/30 bg-success/5 p-6">
-          <div className="flex items-start gap-3">
-            <Check className="h-5 w-5 text-success mt-0.5 shrink-0" />
-            <div>
-              <h3 className="font-semibold text-foreground mb-2">
-                Verify Your Code is on GitHub
-              </h3>
-              <p className="text-sm text-muted-foreground mb-3">
-                Before continuing, make sure you can see your code at:
-              </p>
-              <a
-                href={`https://github.com/${owner}/${repoName}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
-              >
-                https://github.com/{owner}/{repoName}
-                <ExternalLink className="h-3 w-3" />
-              </a>
-              <p className="text-sm text-muted-foreground mt-3">
-                ✅ Can you see your files and commits? Great! You're ready to continue.
-              </p>
-            </div>
+      <div className="rounded-xl border border-success/20 bg-success/5 p-4">
+        <p className="text-sm font-medium text-foreground mb-2">Main checks before continue</p>
+        <div className="grid gap-2 text-sm text-muted-foreground md:grid-cols-2">
+          <div className="flex items-center gap-2">
+            <Check className={`h-4 w-4 ${checks.identity ? "text-success" : "text-muted-foreground"}`} />
+            GitHub username entered
+          </div>
+          <div className="flex items-center gap-2">
+            <Check className={`h-4 w-4 ${checks.repo ? "text-success" : "text-muted-foreground"}`} />
+            Repository name entered
+          </div>
+          <div className="flex items-center gap-2">
+            <Check className={`h-4 w-4 ${checks.gitChoice ? "text-success" : "text-muted-foreground"}`} />
+            Git status selected
+          </div>
+          <div className="flex items-center gap-2">
+            <Check className={`h-4 w-4 ${checks.pushed ? "text-success" : "text-muted-foreground"}`} />
+            Repository push confirmed
           </div>
         </div>
-      )}
+      </div>
 
-      {/* Action buttons */}
       <div className="flex items-center justify-between pt-4">
         <Button variant="outline" onClick={onBack}>
           Back
         </Button>
-        <Button
-          variant="hero"
-          size="lg"
-          onClick={onNext}
-          disabled={!setupComplete || !repoName || !githubUsername || hasGit === null}
-        >
-          Continue to Platform Selection
+        <Button variant="hero" size="lg" onClick={onNext} disabled={!canContinue}>
+          Continue to Deploy and Verify
           <ArrowRight className="h-4 w-4" />
         </Button>
       </div>
