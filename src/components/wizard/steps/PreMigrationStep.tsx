@@ -13,21 +13,21 @@ const readinessTasks = [
   {
     id: "run-local",
     title: "Run the app locally",
-    description: "Install dependencies and confirm the app starts without blocking errors.",
+    description: "Install dependencies and confirm the app opens locally before deployment.",
     importance: "critical" as const,
     code: "npm install\nnpm run dev",
   },
   {
     id: "confirm-env",
     title: "Confirm required environment variables",
-    description: "Write down the variables you must set in your host dashboard.",
+    description: "List every variable your app needs so you can copy them into hosting settings.",
     importance: "critical" as const,
     code: "# Example\n# VITE_API_URL\n# VITE_AUTH_DOMAIN\n# DATABASE_URL (server-side only)",
   },
   {
     id: "protect-secrets",
     title: "Verify secrets are not tracked by git",
-    description: "Ensure `.env` and secret files are ignored before pushing.",
+    description: "Make sure `.env` and secret files are ignored before pushing to GitHub.",
     importance: "critical" as const,
     code: "git status\ncat .gitignore",
   },
@@ -50,6 +50,10 @@ const PreMigrationStep = ({
   const criticalTasksComplete = requiredTaskIds.every((id) =>
     completedTasks.includes(id),
   );
+  const remainingRequiredTasks = readinessTasks.filter(
+    (task) =>
+      requiredTaskIds.includes(task.id) && !completedTasks.includes(task.id),
+  );
 
   return (
     <motion.div
@@ -61,7 +65,8 @@ const PreMigrationStep = ({
       <div>
         <h2 className="text-2xl font-bold text-foreground">Project Readiness</h2>
         <p className="mt-2 text-muted-foreground">
-          We will check the main prerequisites before touching deployment.
+          Start here to prevent the most common deployment mistakes. This step
+          confirms your app works locally and that sensitive values stay private.
         </p>
       </div>
 
@@ -71,10 +76,22 @@ const PreMigrationStep = ({
           <div className="space-y-2">
             <h3 className="font-semibold text-foreground">How this step works</h3>
             <ol className="list-decimal pl-5 text-sm text-muted-foreground space-y-1">
-              <li>Confirm the app runs locally (this catches most blockers early).</li>
-              <li>List your production environment variables.</li>
-              <li>Double-check secrets are excluded from git before pushing.</li>
+              <li>Run the app locally and confirm it opens without blocking errors.</li>
+              <li>List all required environment variables in one place.</li>
+              <li>Confirm secrets are excluded from git before any push.</li>
             </ol>
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-xl border border-border bg-card p-5">
+        <div className="flex items-start gap-3">
+          <CircleHelp className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
+          <div className="space-y-1 text-sm text-muted-foreground">
+            <p className="font-medium text-foreground">Quick terms</p>
+            <p>Environment variable: a setting like an API URL or key.</p>
+            <p>Secret: sensitive value (password/token) that should never be committed.</p>
+            <p>Tracked by git: a file that will be uploaded to GitHub on push.</p>
           </div>
         </div>
       </div>
@@ -95,12 +112,23 @@ const PreMigrationStep = ({
 
       <ChecklistSection
         title="Readiness Checklist"
-        description="Complete the critical tasks to unlock the next step"
+        description="Complete all critical tasks to unlock the next step"
         icon={<CheckCircle2 className="h-5 w-5" />}
         tasks={readinessTasks}
         completedTasks={completedTasks}
         onToggleTask={onToggleTask}
       />
+
+      {!criticalTasksComplete && (
+        <div className="rounded-xl border border-warning/30 bg-warning/5 p-4 text-sm text-muted-foreground">
+          <p className="font-medium text-foreground">Still needed before Step 2</p>
+          <ul className="mt-2 space-y-1">
+            {remainingRequiredTasks.map((task) => (
+              <li key={task.id}>• {task.title}</li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <div className="flex items-center justify-between pt-4">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">

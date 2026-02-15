@@ -80,6 +80,15 @@ const DeploymentStep = ({
   const canMarkComplete = Boolean(
     host && deploymentUrl.trim() && allChecksComplete,
   );
+  const missingVerificationItems = useMemo(() => {
+    const items: string[] = [];
+    if (!deploymentUrl.trim()) items.push("Add your live deployment URL");
+    if (!verified.loads) items.push("Confirm the site opens without errors");
+    if (!verified.routes) items.push("Test at least one deep link and refresh");
+    if (!verified.env) items.push("Confirm environment variables are working");
+    if (!verified.core) items.push("Run one full core user flow");
+    return items;
+  }, [deploymentUrl, verified]);
 
   const verificationItems: Array<{
     id: keyof VerificationChecks;
@@ -89,22 +98,22 @@ const DeploymentStep = ({
     {
       id: "loads",
       label: "Site loads without runtime errors",
-      description: "Open production URL and inspect browser console.",
+      description: "Open the live URL and check the browser console for red errors.",
     },
     {
       id: "routes",
       label: "Routes work correctly",
-      description: "Test deep links and browser refresh behavior.",
+      description: "Open an inner page URL directly, then refresh and confirm it still loads.",
     },
     {
       id: "env",
       label: "Environment variables are correctly configured",
-      description: "Verify API calls/auth/dependent services.",
+      description: "Check login, API calls, and services that depend on env variables.",
     },
     {
       id: "core",
       label: "Core user flow is working",
-      description: "Run one full critical workflow in production.",
+      description: "Complete one important end-to-end action as a real user would.",
     },
   ];
 
@@ -118,7 +127,8 @@ const DeploymentStep = ({
       <div>
         <h2 className="text-2xl font-bold text-foreground">Deploy and Verify</h2>
         <p className="mt-2 text-muted-foreground">
-          We will choose your host, apply settings, deploy, then verify the main production checks.
+          You will publish your app to a hosting platform, then confirm the live version
+          works the same as your local app.
         </p>
       </div>
 
@@ -127,10 +137,22 @@ const DeploymentStep = ({
           <Info className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
           <div className="space-y-1 text-sm text-muted-foreground">
             <p className="font-medium text-foreground">Step flow</p>
-            <p>1) Pick host based on app type</p>
-            <p>2) Copy build/output settings and set environment variables</p>
-            <p>3) Run deploy from host dashboard</p>
-            <p>4) Verify URL, routes, env, and core flow</p>
+            <p>1) Pick a host (Vercel is usually easiest for Vite + React).</p>
+            <p>2) Copy the build and output settings exactly.</p>
+            <p>3) Add your environment variables in the host dashboard.</p>
+            <p>4) Deploy, open the live URL, and finish the verification checks.</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-xl border border-border bg-card p-5">
+        <div className="flex items-start gap-3">
+          <Info className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
+          <div className="space-y-1 text-sm text-muted-foreground">
+            <p className="font-medium text-foreground">How to pick quickly</p>
+            <p>Choose Vercel or Netlify for frontend-only apps.</p>
+            <p>Choose Render or Railway if you also deploy backend services.</p>
+            <p>Choose GitHub Pages for simple static sites or docs.</p>
           </div>
         </div>
       </div>
@@ -156,7 +178,8 @@ const DeploymentStep = ({
 
       {!host && (
         <div className="rounded-xl border border-dashed border-border p-6 text-sm text-muted-foreground">
-          Choose a host above to unlock deployment settings and verification checklist.
+          Choose a host above to unlock deployment settings and the verification checklist.
+          If you are unsure, start with Vercel.
         </div>
       )}
 
@@ -165,7 +188,7 @@ const DeploymentStep = ({
           <div className="rounded-xl border border-border bg-card overflow-hidden">
             <div className="border-b border-border bg-muted/50 p-4">
               <p className="font-medium text-foreground">
-                {host.name} deployment settings
+                Copy these settings into {host.name}
               </p>
             </div>
             <div className="space-y-4 p-6">
@@ -183,15 +206,18 @@ const DeploymentStep = ({
               <div className="rounded-lg border border-primary/25 bg-primary/5 p-4 text-sm text-foreground">
                 <p className="font-medium">Best for: {host.bestFor}</p>
                 <p className="mt-1 text-muted-foreground">{host.envNote}</p>
+                <p className="mt-1 text-muted-foreground">
+                  If your host auto-fills values, still confirm they match below.
+                </p>
               </div>
 
               <div className="rounded-lg border border-success/25 bg-success/5 p-4 text-sm text-muted-foreground">
                 <p className="font-medium text-foreground">Main checks for this host</p>
                 <ul className="mt-2 space-y-1">
-                  <li>• Build command is set exactly as shown.</li>
-                  <li>• Output directory points to `dist`.</li>
-                  <li>• All required env variables are set in dashboard.</li>
-                  <li>• Production URL opens after deploy.</li>
+                  <li>• Build command matches exactly.</li>
+                  <li>• Output directory is set to `dist`.</li>
+                  <li>• Required env variables are added in the dashboard.</li>
+                  <li>• Live URL opens after deployment completes.</li>
                 </ul>
               </div>
 
@@ -223,17 +249,23 @@ const DeploymentStep = ({
           <div className="rounded-xl border border-border bg-card overflow-hidden">
             <div className="border-b border-border bg-muted/50 p-4">
               <p className="font-medium text-foreground">Production verification</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                This final checklist helps catch the most common post-deploy issues.
+              </p>
             </div>
             <div className="space-y-5 p-6">
               <div>
                 <label className="mb-2 block text-sm font-medium text-foreground">
                   Deployment URL
                 </label>
+                <p className="mb-2 text-xs text-muted-foreground">
+                  Paste your live link from the host dashboard, then open it to test.
+                </p>
                 <div className="flex gap-2">
                   <Input
                     value={deploymentUrl}
                     onChange={(e) => setDeploymentUrl(e.target.value)}
-                    placeholder="https://your-app.example.com"
+                    placeholder="https://your-app.vercel.app"
                     className="flex-1"
                   />
                   {deploymentUrl && (
@@ -276,10 +308,21 @@ const DeploymentStep = ({
                 className="gap-2"
               >
                 <ShieldCheck className="h-4 w-4" />
-                Mark Deployment Verified
+                Mark Deployment Complete
               </Button>
             </div>
           </div>
+
+          {!canMarkComplete && (
+            <div className="rounded-xl border border-warning/30 bg-warning/5 p-4 text-sm text-muted-foreground">
+              <p className="font-medium text-foreground">Still needed before completion</p>
+              <ul className="mt-2 space-y-1">
+                {missingVerificationItems.map((item) => (
+                  <li key={item}>• {item}</li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {isComplete && (
             <motion.div
@@ -292,7 +335,7 @@ const DeploymentStep = ({
                 <div>
                   <h3 className="font-semibold text-foreground">Deployment complete</h3>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    Your app is deployed to {host.name} and passed verification.
+                    Nice work. Your app is live on {host.name} and passed verification.
                   </p>
                   {deploymentUrl && (
                     <a

@@ -1,58 +1,70 @@
-# 🧙 Glide Path Wizard
+# Glide Path Wizard
 
-> 🚀 A guided web wizard for deploying your app without unnecessary complexity.
+Beginner-friendly deployment guidance for React/Vite projects.
 
-## ✨ What You Get
+## What this project is
 
-A step-by-step deployment assistant focused on the essentials:
+Glide Path Wizard is a step-by-step web wizard that helps you deploy safely:
 
-1. ✅ **Project Readiness**
-2. 🐙 **Repository Setup**
-3. 🌍 **Deploy and Verify**
+1. `Project Readiness` (check local app + protect secrets)
+2. `Repository Setup` (create GitHub repo + push code)
+3. `Deploy and Verify` (choose host + confirm production works)
 
-## 🚀 Quick Start
+The wizard is designed for people who are new to deployment and want clear, practical instructions.
+
+## Who this is for
+
+- First-time deployers
+- Developers who want a checklist instead of guesswork
+- Teams that want a consistent release flow
+
+## Quick start
 
 ```bash
 npm install
 npm run dev
 ```
 
-## 🧭 Wizard Flow
+Open `http://localhost:8080/`.
 
-### 1) ✅ Project Readiness
-Check the core blockers before deployment:
+## Beginner flow details
 
-- App runs locally
-- Required env vars are known
-- Secrets are not tracked by git
+### Step 1: Project Readiness
 
-### 2) 🐙 Repository Setup
-Create and connect your GitHub repository, then push your code.
+Goal: catch blockers before deployment.
 
-- Enter GitHub username + repo name
+- Confirm app runs locally
+- List required environment variables
+- Make sure `.env`/secrets are not tracked by git
+
+### Step 2: Repository Setup
+
+Goal: get your project safely on GitHub.
+
+- Enter GitHub username and repository name
 - Choose whether git is already initialized
-- Run generated commands and confirm push
+- Run generated commands in your project folder
+- Confirm the GitHub repository URL shows your files
 
-### 3) 🌍 Deploy and Verify
-Pick a host, apply settings, deploy, and verify key production checks.
+### Step 3: Deploy and Verify
 
-- Build command + output directory
-- Environment variable setup
-- Production URL + route verification
-- Core user flow smoke test
+Goal: publish your app and validate key production behavior.
 
-## ☁️ Supported Hosts
+- Pick a host (Vercel is the easiest default for many React/Vite apps)
+- Copy build/output settings
+- Add environment variables in host dashboard
+- Verify URL, routes, env-dependent features, and one core user flow
 
-| Host | Best For | Highlights |
-|---|---|---|
-| **Vercel** ⚡ | React/Vite/Next apps | Fast previews, simple setup |
-| **Netlify** 🦋 | Static/JAMstack apps | Easy static deploy workflow |
-| **Render** 🔧 | Full-stack apps | Good service-oriented hosting |
-| **GitHub Pages** 📄 | Docs/portfolio static sites | Repo-based free static hosting |
-| **Cloudflare Pages** ☁️ | Static + edge delivery | Global CDN and edge integrations |
-| **Railway** 🚂 | Full-stack/runtime apps | Quick service deploy experience |
+## Supported hosts
 
-## 🛠 Development
+- Vercel
+- Netlify
+- Render
+- GitHub Pages
+- Cloudflare Pages
+- Railway
+
+## Commands
 
 ```bash
 npm run dev
@@ -61,17 +73,13 @@ npm run lint
 npm run build
 ```
 
-## 🧪 Quality Checks
+## Notes
 
-Before shipping changes:
+- Progress is saved in browser `localStorage`.
+- This wizard provides guidance and checklists; it does not auto-deploy by itself.
+- Keep secrets in environment variables, never in committed source files.
 
-```bash
-npm run lint
-npm run test
-npm run build
-```
+## Extra docs
 
-## 🔐 Notes
-
-- Wizard progress is stored in browser `localStorage`.
-- Keep secret values in environment variables, not in committed files.
+- CLI companion docs: `CLI Incomplete/CLI_README.md`
+- Historical CLI implementation notes: `CLI Incomplete/CLI_IMPLEMENTATION_SUMMARY.md`

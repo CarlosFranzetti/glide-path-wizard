@@ -25,8 +25,8 @@ export const DEPLOYMENT_HOSTS: DeploymentHostConfig[] = [
   {
     id: "vercel",
     name: "Vercel",
-    description: "Fast path for React/Vite apps with previews and simple routing support.",
-    bestFor: "Frontend-first React/Vite apps",
+    description: "Easiest default for React/Vite projects with quick setup and previews.",
+    bestFor: "Beginner-friendly React/Vite frontends",
     deployUrl: "https://vercel.com/new",
     pricing: "Free tier available",
     features: [
@@ -44,13 +44,13 @@ export const DEPLOYMENT_HOSTS: DeploymentHostConfig[] = [
   "framework": "vite",
   "rewrites": [{ "source": "/(.*)", "destination": "/" }]
 }`,
-    envNote: "Add VITE_* and runtime secrets in Project Settings -> Environment Variables.",
+    envNote: "Add your VITE_* values in Project Settings -> Environment Variables.",
   },
   {
     id: "netlify",
     name: "Netlify",
-    description: "Simple static deployment with reliable SPA redirect support.",
-    bestFor: "Static/JAMstack sites",
+    description: "Simple static hosting with reliable SPA redirects.",
+    bestFor: "Frontend-only static sites",
     deployUrl: "https://app.netlify.com/start",
     pricing: "Free tier available",
     features: [
@@ -70,13 +70,13 @@ export const DEPLOYMENT_HOSTS: DeploymentHostConfig[] = [
   from = "/*"
   to = "/index.html"
   status = 200`,
-    envNote: "Set env vars in Site configuration -> Environment variables.",
+    envNote: "Set your variables in Site configuration -> Environment variables.",
   },
   {
     id: "render",
     name: "Render",
-    description: "Straightforward deploy flow for static sites and full-stack services.",
-    bestFor: "Apps with backend services",
+    description: "Good option if your project includes backend services.",
+    bestFor: "Full-stack projects with API/server services",
     deployUrl: "https://dashboard.render.com/new",
     pricing: "Free tier available",
     features: [
@@ -98,13 +98,13 @@ export const DEPLOYMENT_HOSTS: DeploymentHostConfig[] = [
       - type: rewrite
         source: /*
         destination: /index.html`,
-    envNote: "Set variables in Render dashboard under Environment for the service.",
+    envNote: "Set variables under Environment for the service in the Render dashboard.",
   },
   {
     id: "github-pages",
     name: "GitHub Pages",
-    description: "No-cost static hosting directly from your repository.",
-    bestFor: "Docs and simple static sites",
+    description: "Free static hosting directly from your GitHub repository.",
+    bestFor: "Docs, portfolios, and simple static websites",
     deployUrl: "https://github.com",
     pricing: "Always free",
     features: [
@@ -136,13 +136,13 @@ jobs:
         with:
           github_token: \${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist`,
-    envNote: "Configure required secrets in repository Settings -> Secrets and variables.",
+    envNote: "Configure required values in repository Settings -> Secrets and variables.",
   },
   {
     id: "cloudflare-pages",
     name: "Cloudflare Pages",
-    description: "Global static hosting with edge integrations and fast CDN delivery.",
-    bestFor: "Static SPAs and edge-oriented frontend delivery",
+    description: "Fast global static hosting with built-in CDN delivery.",
+    bestFor: "Static SPAs that need fast global delivery",
     deployUrl: "https://dash.cloudflare.com/?to=/:account/pages",
     pricing: "Free tier available",
     features: [
@@ -158,13 +158,13 @@ Framework preset: None (for Vite)
 Build command: npm run build
 Build output directory: dist
 Node version: 18+`,
-    envNote: "Set variables in Pages project -> Settings -> Environment variables.",
+    envNote: "Set variables in your Pages project -> Settings -> Environment variables.",
   },
   {
     id: "railway",
     name: "Railway",
-    description: "Quick path for full-stack apps and runtime services with simple deploy UX.",
-    bestFor: "Apps that need API/runtime services",
+    description: "Simple deploy flow for apps that include running backend services.",
+    bestFor: "Projects needing backend/runtime services",
     deployUrl: "https://railway.com/new",
     pricing: "Usage-based",
     features: [
@@ -180,7 +180,7 @@ Build command: npm run build
 Start command: npx serve dist
 
 # For full-stack apps, set your server start command instead.`,
-    envNote: "Configure env vars per Railway service in Variables before deploy.",
+    envNote: "Configure variables for each Railway service before deployment.",
   },
 ];
 

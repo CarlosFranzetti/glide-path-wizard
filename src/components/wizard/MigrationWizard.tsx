@@ -22,17 +22,17 @@ const steps = [
   {
     id: 1,
     title: "Project Readiness",
-    description: "Confirm the app is ready to ship",
+    description: "Check local app health and protect secrets first",
   },
   {
     id: 2,
     title: "Repository Setup",
-    description: "Push your project to GitHub",
+    description: "Create your GitHub repo and upload your code",
   },
   {
     id: 3,
     title: "Deploy and Verify",
-    description: "Choose a host and validate production",
+    description: "Launch your app and run a beginner-safe checklist",
   },
 ];
 
@@ -97,7 +97,7 @@ const MigrationWizard = () => {
             </div>
             <div>
               <h1 className="font-bold text-foreground">Migration Assistant</h1>
-              <p className="text-xs text-muted-foreground">Deployment Flow</p>
+              <p className="text-xs text-muted-foreground">Beginner-Friendly Deployment Flow</p>
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -118,7 +118,7 @@ const MigrationWizard = () => {
                 <AlertDialogHeader>
                   <AlertDialogTitle>Reset All Progress?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    This clears checklist completion, selected host, and step position.
+                    This will clear completed tasks, selected host, and your current step.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
