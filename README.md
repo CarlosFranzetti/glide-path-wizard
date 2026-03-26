@@ -1,85 +1,59 @@
-# Glide Path Wizard
+# 🧙 Glide Path Wizard
 
-Beginner-friendly deployment guidance for React/Vite projects.
+**Your step-by-step guide to deploying a React/Vite app — no guesswork required.**
 
-## What this project is
+## What is this?
 
-Glide Path Wizard is a step-by-step web wizard that helps you deploy safely:
+Glide Path Wizard walks you through deploying your app in three clear steps.
+It's built for first-time deployers who want a checklist — not a wall of docs.
+Just follow the steps, and you'll have your app live. 🎉
 
-1. `Project Readiness` (check local app + protect secrets)
-2. `Repository Setup` (create GitHub repo + push code)
-3. `Deploy and Verify` (choose host + confirm production works)
+---
 
-The wizard is designed for people who are new to deployment and want clear, practical instructions.
+## 🟢 Step 1 — Project Readiness
 
-## Who this is for
+- ✅ Confirm your app runs locally
+- 📋 List all required environment variables
+- 🔒 Make sure `.env` is **not** committed to git
 
-- First-time deployers
-- Developers who want a checklist instead of guesswork
-- Teams that want a consistent release flow
+---
 
-## Quick start
+## 🔵 Step 2 — Repository Setup
 
-```bash
-npm install
-npm run dev
-```
+- 👤 Enter your GitHub username + repo name
+- 🔧 Choose whether git is already initialized
+- 💻 Run the generated commands in your project folder
+- ✔️ Confirm your files appear on GitHub
 
-Open `http://localhost:8080/`.
+---
 
-## Beginner flow details
+## 🚀 Step 3 — Deploy & Verify
 
-### Step 1: Project Readiness
+- 🌍 Pick a host from the list below
+- ⚙️ Copy the build/output settings into the host dashboard
+- 🔑 Add your environment variables in the host dashboard
+- 🧪 Verify your URL, routes, env features, and one core user flow
 
-Goal: catch blockers before deployment.
+---
 
-- Confirm app runs locally
-- List required environment variables
-- Make sure `.env`/secrets are not tracked by git
+## 🏠 Supported Hosts
 
-### Step 2: Repository Setup
+Vercel ⚡ · Netlify 🌐 · Render 🎨 · GitHub Pages 📄 · Cloudflare Pages ☁️ · Railway 🚂
 
-Goal: get your project safely on GitHub.
+---
 
-- Enter GitHub username and repository name
-- Choose whether git is already initialized
-- Run generated commands in your project folder
-- Confirm the GitHub repository URL shows your files
+## 📥 Download as PDF
 
-### Step 3: Deploy and Verify
+[📥 Download README as PDF](https://raw.githubusercontent.com/CarlosFranzetti/glide-path-wizard/main/README.pdf)
 
-Goal: publish your app and validate key production behavior.
+---
 
-- Pick a host (Vercel is the easiest default for many React/Vite apps)
-- Copy build/output settings
-- Add environment variables in host dashboard
-- Verify URL, routes, env-dependent features, and one core user flow
+## 🔮 Coming Soon — CLI Companion
 
-## Supported hosts
+> A companion CLI tool is in active development and will let you run this entire wizard from your terminal — no browser needed!
 
-- Vercel
-- Netlify
-- Render
-- GitHub Pages
-- Cloudflare Pages
-- Railway
+📖 [CLI Companion Docs](./CLI%20Incomplete/CLI_README.md) · 🗒️ [CLI Implementation Notes](./CLI%20Incomplete/CLI_IMPLEMENTATION_SUMMARY.md)
 
-## Commands
+---
 
-```bash
-npm run dev
-npm run test
-npm run lint
-npm run build
-```
-
-## Notes
-
-- Progress is saved in browser `localStorage`.
-- This wizard provides guidance and checklists; it does not auto-deploy by itself.
-- Keep secrets in environment variables, never in committed source files.
-
-## Extra docs
-
-- CLI companion docs: `CLI Incomplete/CLI_README.md`
-- Historical CLI implementation notes: `CLI Incomplete/CLI_IMPLEMENTATION_SUMMARY.md`
+> 💾 Progress is saved in browser localStorage · 🧭 This wizard guides you, it does not auto-deploy · 🔐 Never commit secrets
